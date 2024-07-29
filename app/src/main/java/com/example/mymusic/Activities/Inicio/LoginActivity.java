@@ -78,7 +78,6 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
                 progressBar2.setVisibility(View.VISIBLE);
-
                 //Auth el usuario
 
                 fAuth.signInWithEmailAndPassword(vCorreo, vPasswd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {

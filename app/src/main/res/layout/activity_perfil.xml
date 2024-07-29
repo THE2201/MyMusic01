@@ -6,6 +6,109 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fondo_general"
-    tools:context=".Usuario.PerfilActivity">
+    tools:context=".Activities.Usuario.PerfilActivity">
+
+    <ImageView
+        android:id="@+id/image_perfil"
+        android:layout_width="180dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="53dp"
+        android:layout_marginBottom="9dp"
+        android:src="@drawable/user_24"
+        app:layout_constraintBottom_toTopOf="@+id/btcambiarfoto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/usuarioperfil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="21dp"
+        android:ems="10"
+        android:enabled="false"
+        android:hint="usuario"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/nombreperfil"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btcambiarfoto" />
+
+    <EditText
+        android:id="@+id/nombreperfil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:ems="10"
+        android:enabled="false"
+        android:hint="nombre"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/apellidoperfil"
+        app:layout_constraintStart_toStartOf="@+id/usuarioperfil"
+        app:layout_constraintTop_toBottomOf="@+id/usuarioperfil" />
+
+    <EditText
+        android:id="@+id/apellidoperfil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:ems="10"
+        android:enabled="false"
+        android:hint="apellido"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/passwdperfil"
+        app:layout_constraintStart_toStartOf="@+id/nombreperfil"
+        app:layout_constraintTop_toBottomOf="@+id/nombreperfil" />
+
+    <Button
+        android:id="@+id/btcambiarfoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="14dp"
+        android:text="Elegir"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/usuarioperfil"
+        app:layout_constraintEnd_toEndOf="@+id/image_perfil"
+        app:layout_constraintStart_toStartOf="@+id/image_perfil"
+        app:layout_constraintTop_toBottomOf="@+id/image_perfil" />
+
+    <Button
+        android:id="@+id/btguardar_perfil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="13dp"
+        android:text="Guardar Cambios"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/cancelarperfil"
+        app:layout_constraintStart_toStartOf="@+id/passwdperfil"
+        app:layout_constraintTop_toBottomOf="@+id/passwdperfil" />
+
+    <Button
+        android:id="@+id/passwdperfil"
+        android:layout_width="197dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="17dp"
+        android:ems="10"
+        android:enabled="false"
+        android:text="Cambiar contrasena"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/btguardar_perfil"
+        app:layout_constraintStart_toStartOf="@+id/apellidoperfil"
+        app:layout_constraintTop_toBottomOf="@+id/apellidoperfil" />
+
+    <Button
+        android:id="@+id/cancelarperfil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="42dp"
+        android:text="Cancelar"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/btguardar_perfil"
+        app:layout_constraintTop_toBottomOf="@+id/btguardar_perfil" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
