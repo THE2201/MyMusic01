@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <queries>
+
+        <!-- Browser -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+
+            <data android:scheme="http" />
+        </intent>
+        <!-- Camera -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <!-- Gallery -->
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/launchericon"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyMusic"
+        tools:targetApi="31">
+        <activity
+            android:name=".Activities.Inicio.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Playback.PlayAudioActivity"
+            android:exported="true"
+            android:label="Audio Playback"
+            android:parentActivityName=".Activities.Grupos.GrupoAudioActivity" />
+        <activity
+            android:name=".Activities.Playback.PlayVideoActivity"
+            android:exported="true"
+            android:label="Video Playback"
+            android:parentActivityName=".Activities.Grupos.GrupoVideoActivity" />
+        <activity
+            android:name=".Activities.Usuario.EditarPerfilActivity"
+            android:exported="true"
+            android:label="Editar perfil"
+            android:parentActivityName=".Activities.Usuario.PerfilActivity" />
+        <activity
+            android:name=".Activities.Usuario.PerfilActivity"
+            android:exported="true"
+            android:label="Mi perfil"
+            android:parentActivityName=".Activities.Inicio.DashboardActivity" />
+        <activity
+            android:name=".Activities.Grabadora.GrabacionesActivity"
+            android:exported="true"
+            android:label="Mis grabaciones"
+            android:parentActivityName=".Activities.Grabadora.GrabadoraActivity" />
+        <activity
+            android:name=".Activities.Grabadora.GrabadoraActivity"
+            android:exported="true"
+            android:label="Grabadora"
+            android:parentActivityName=".Activities.Inicio.DashboardActivity" />
+        <activity
+            android:name=".Activities.Solicitudes.CrearSolicitudActivity"
+            android:exported="true"
+            android:label="Crear solicitud"
+            android:parentActivityName=".Activities.Solicitudes.SolicitudesActivity" />
+        <activity
+            android:name=".Activities.Solicitudes.SolicitudesActivity"
+            android:exported="true"
+            android:label="Solicitudes"
+            android:parentActivityName=".Activities.Inicio.DashboardActivity" />
+        <activity
+            android:name=".Activities.Grupos.GrupoAudioActivity"
+            android:exported="true"
+            android:label="Audios"
+            android:parentActivityName=".Activities.Grupos.MisGruposActivity" />
+        <activity
+            android:name=".Activities.Grupos.GrupoVideoActivity"
+            android:exported="true"
+            android:label="Videos"
+            android:parentActivityName=".Activities.Grupos.MisGruposActivity" />
+        <activity
+            android:name=".Activities.Grupos.SubirVideoActivity"
+            android:exported="true"
+            android:label="Subir video"
+            android:parentActivityName=".Activities.Grupos.GrupoVideoActivity" />
+        <activity
+            android:name=".Activities.Grupos.SubirAudioActivity"
+            android:exported="true"
+            android:label="Subir audio"
+            android:parentActivityName=".Activities.Grupos.GrupoAudioActivity" />
+        <activity
+            android:name=".Activities.Grupos.CrearGrupoActivity"
+            android:exported="true"
+            android:label="Crear grupo"
+            android:parentActivityName=".Activities.Inicio.DashboardActivity" />
+        <activity
+            android:name=".Activities.Grupos.MisGruposActivity"
+            android:exported="true"
+            android:label="Mis grupos"
+            android:parentActivityName=".Activities.Inicio.DashboardActivity" />
+        <activity
+            android:name=".Activities.Grupos.DescubrirGruposActivity"
+            android:exported="true"
+            android:label="Descubrir grupos"
+            android:parentActivityName=".Activities.Inicio.DashboardActivity" />
+        <activity
+            android:name=".Activities.Registro.RegistroActivity"
+            android:exported="true"
+            android:label="Registrarme" />
+        <activity
+            android:name=".Activities.Inicio.DashboardActivity"
+            android:exported="true"
+            android:label="Music App HN" />
+        <activity
+            android:name=".Activities.Inicio.ExtravioCuentaActivity"
+            android:exported="true"
+            android:parentActivityName=".Activities.Inicio.LoginActivity"
+            android:label="Cuenta extraviada" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

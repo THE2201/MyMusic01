@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_list"
+    tools:context=".Activities.Inicio.LoginActivity">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="112dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/launchericon" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="36dp"
+        android:text="Bienvenido"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <EditText
+        android:id="@+id/logCorreo"
+        android:layout_width="279dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/transp"
+        android:ems="10"
+        android:hint="Correo"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <EditText
+        android:id="@+id/logPasswd"
+        android:layout_width="279dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/transp"
+        android:ems="10"
+        android:hint="Contrasena"
+        android:inputType="textPassword"
+        app:layout_constraintStart_toStartOf="@+id/logCorreo"
+        app:layout_constraintTop_toBottomOf="@+id/logCorreo" />
+
+    <Button
+        android:id="@+id/btOlvide"
+        android:layout_width="212dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="48dp"
+        android:backgroundTint="#CA2525"
+        android:text="Olvide mi contrasena"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#4CAF50"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/btRegistro"
+        app:layout_constraintStart_toStartOf="@+id/btRegistro" />
+
+    <Button
+        android:id="@+id/btRegistro"
+        android:layout_width="170dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="#9203A9F4"
+        android:text="Registrarme"
+        app:layout_constraintBottom_toTopOf="@+id/btOlvide"
+        app:layout_constraintStart_toStartOf="@+id/btOlvide" />
+
+    <Button
+        android:id="@+id/btLogin"
+        android:layout_width="253dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/verde"
+        android:text="Entrar"
+        app:layout_constraintEnd_toEndOf="@+id/logPasswd"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="@+id/logPasswd"
+        app:layout_constraintTop_toBottomOf="@+id/logPasswd" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

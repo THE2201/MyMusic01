@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/agregar_video"
+        android:title="Agregar Video"
+
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/abandonar_grupo_video"
+        android:title="Abandonar grupo"
+        app:showAsAction="never"/>
+
+</menu>
