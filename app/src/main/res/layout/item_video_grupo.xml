@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/id_video_api"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/caratula_video"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="15dp"
+        app:srcCompat="@drawable/video_default_24" />
+
+    <TextView
+        android:id="@+id/titulo_adisponible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/bt_play_video"
+        android:layout_toEndOf="@+id/caratula_video"
+        android:layout_weight="1"
+        android:text="Titulo mi video"
+        android:textColor="#673AB7"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/autor_video"
+        android:layout_width="wrap_content"
+        android:layout_height="31dp"
+        android:layout_below="@+id/titulo_adisponible"
+        android:layout_alignStart="@+id/titulo_adisponible"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:text="JorgeMusic"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/bt_play_video"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/play_video_24" />
+
+    <TextView
+        android:id="@+id/cantidad_audios"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/autor_video"
+        android:layout_alignStart="@+id/autor_video"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="5dp"
+        android:text="00:00"
+        android:textSize="12sp" />
+</RelativeLayout>

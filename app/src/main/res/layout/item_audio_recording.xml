@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/id_recording_api"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/icon_recorder"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="15dp"
+        app:srcCompat="@drawable/mic_24" />
+
+    <TextView
+        android:id="@+id/title_recording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textColor="#673AB7"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/bt_share_recording"
+        android:layout_toEndOf="@+id/icon_recorder"
+        android:layout_weight="1"
+        android:text="AUD"
+        android:textStyle="bold"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/recording_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="31dp"
+        android:layout_below="@+id/title_recording"
+        android:layout_alignStart="@+id/title_recording"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:text="20/07/2024 20:08"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/btn_delete_recording"
+        android:layout_width="80dp"
+        android:backgroundTint="#E91E63"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bt_share_recording"
+        android:layout_alignStart="@+id/bt_share_recording"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="20dp"
+        android:includeFontPadding="false"
+        android:src="@drawable/grab_delete"
+        android:scaleType="fitCenter"
+       />
+
+    <ImageButton
+        android:id="@+id/bt_share_recording"
+        android:layout_width="80dp"
+        android:scaleType="fitCenter"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/grab_share"
+        />
+
+    <TextView
+        android:id="@+id/duration_recording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recording_timestamp"
+        android:layout_alignStart="@+id/recording_timestamp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="5dp"
+        android:text="00:00"
+        android:textSize="12sp" />
+</RelativeLayout>
