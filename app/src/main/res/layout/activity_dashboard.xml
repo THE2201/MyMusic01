@@ -8,4 +8,213 @@
     android:background="@color/fondo_general"
     tools:context="Activities.Inicio.DashboardActivity">
 
+    <TextView
+        android:id="@+id/txtbienvenida"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:paddingStart="20dp"
+        android:text="BIENVENIDO USUARIO"
+        android:textAlignment="viewStart"
+        android:textColor="@color/negro"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tag0"
+        android:paddingStart="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lo mas reciente de la musica"
+        android:textColor="@color/negro"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtbienvenida" />
+
+
+    <Button
+        android:id="@+id/btn_descubrir_gaudios"
+        android:layout_width="135dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="1dp"
+        android:backgroundTint="#6103A9F4"
+        android:text="Audios"
+        app:cornerRadius="0dp"
+        app:icon="@mipmap/volumen"
+        app:layout_constraintEnd_toStartOf="@+id/btn_descubrir_gvideos"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/tag0"
+        app:layout_constraintTop_toBottomOf="@+id/tag0" />
+
+    <Button
+        android:id="@+id/btn_descubrir_vermas"
+        android:layout_width="136dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#8C8889"
+        android:text="Ver mas"
+        app:cornerRadius="0dp"
+        app:icon="@mipmap/mas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tag0" />
+
+    <ImageButton
+        android:id="@+id/btn_mis_grupos"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="50dp"
+        android:backgroundTint="@color/blanco"
+        android:scaleType="fitEnd"
+        android:src="@drawable/user_24"
+        app:cornerRadius="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/txtmigrupos"
+        app:layout_constraintEnd_toStartOf="@+id/btn_crear_grupo"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_descubrir_gaudios" />
+
+    <ImageButton
+        android:id="@+id/btn_crear_grupo"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="50dp"
+        android:backgroundTint="@color/blanco"
+        android:scaleType="fitEnd"
+        android:src="@drawable/plus_24"
+        app:layout_constraintBottom_toTopOf="@+id/txtcreargrupo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_mis_grupos"
+        app:layout_constraintTop_toBottomOf="@+id/btn_descubrir_vermas" />
+
+    <TextView
+        android:id="@+id/txtmigrupos"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
+        android:fontFamily="sans-serif"
+        android:text="Mis grupos"
+        android:textAlignment="center"
+        android:textColor="@color/blanco"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/txtactiv"
+        app:layout_constraintEnd_toStartOf="@+id/txtcreargrupo"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_mis_grupos" />
+
+    <Button
+        android:id="@+id/btn_descubrir_gvideos"
+        android:layout_width="136dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="1dp"
+        android:backgroundTint="#70FF9800"
+        android:text="Videos"
+        app:cornerRadius="0dp"
+        app:icon="@mipmap/tocar"
+        app:layout_constraintEnd_toStartOf="@+id/btn_descubrir_vermas"
+        app:layout_constraintTop_toBottomOf="@+id/tag0" />
+
+    <TextView
+        android:id="@+id/txtsolicitudes"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif"
+        android:text="Solicitudes"
+        android:textAlignment="center"
+        android:textColor="@color/blanco"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/txtgrabadora"
+        app:layout_constraintTop_toBottomOf="@+id/btn_solicitudes" />
+
+    <ImageButton
+        android:id="@+id/btn_solicitudes"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="1dp"
+        android:backgroundTint="@color/blanco"
+        android:scaleType="fitEnd"
+        android:src="@drawable/solicitudes_24"
+        app:layout_constraintBottom_toTopOf="@+id/txtsolicitudes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_grabadora"
+        app:layout_constraintTop_toBottomOf="@+id/txtactiv" />
+
+    <TextView
+        android:id="@+id/txtactiv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:fontFamily="sans-serif"
+        android:text="Mi Actividad"
+        android:textColor="@color/negro"
+        android:paddingStart="20dp"
+        android:textSize="35sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtmigrupos" />
+
+    <TextView
+        android:id="@+id/txtgrabadora"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif"
+        android:text="Grabadora"
+        android:textAlignment="center"
+        android:textColor="@color/blanco"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/txtsolicitudes"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_grabadora" />
+
+    <ImageButton
+        android:id="@+id/btn_grabadora"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/blanco"
+        android:scaleType="fitEnd"
+        android:src="@drawable/mic_on"
+        app:layout_constraintBottom_toTopOf="@+id/txtgrabadora"
+        app:layout_constraintEnd_toStartOf="@+id/btn_solicitudes"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtactiv" />
+
+    <TextView
+        android:id="@+id/txtcreargrupo"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
+        android:fontFamily="sans-serif"
+        android:text="Crear Grupo"
+        android:textAlignment="center"
+        android:textColor="@color/blanco"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/txtactiv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/txtmigrupos"
+        app:layout_constraintTop_toBottomOf="@+id/btn_crear_grupo" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="txtcreargrupo,txtmigrupos,btn_crear_grupo,btn_mis_grupos" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
