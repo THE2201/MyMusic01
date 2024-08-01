@@ -192,7 +192,7 @@ public class RegistroActivity extends AppCompatActivity {
 
     private boolean correoTieneCuenta(String correo) {
         String url = "http://34.125.8.146/verificacionCorreo.php";
-
+        //prueba COMMIT en git
         JSONObject postData = new JSONObject();
         try {
             postData.put("correo", correo);
