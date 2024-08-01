@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -13,10 +14,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.mymusic.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class EditarPerfilActivity extends AppCompatActivity {
 
-    private EditText etPassword,etPassword1, olePassword;
+    private EditText etPassword,etPassword1;
     private Button btnTogglePassword, btConfirmar, btCancelar;
     private boolean isPasswordVisible = false;
 
@@ -26,7 +31,6 @@ public class EditarPerfilActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_editar_perfil);
 
-        olePassword = findViewById(R.id.olePassword);
         etPassword1 = findViewById(R.id.etPassword1);
         etPassword = findViewById(R.id.etPassword);
         btnTogglePassword = findViewById(R.id.btnTogglePassword);
@@ -36,8 +40,18 @@ public class EditarPerfilActivity extends AppCompatActivity {
         btConfirmar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                
+                
                 if(isEqualPass()){
-                    Toast.makeText(EditarPerfilActivity.this, "Iguales", Toast.LENGTH_SHORT).show();
+                    String nueva = etPassword.getText().toString().trim();
+
+                    if(minimoCaracteres(nueva)){
+                        updContrasena(nueva);
+                    }else{
+                        Toast.makeText(EditarPerfilActivity.this, "Debe ser mayor a 8 caracteres.", Toast.LENGTH_SHORT).show();
+                    }
+                    
+                    
                 }else{
                     Toast.makeText(EditarPerfilActivity.this, "No conciden", Toast.LENGTH_SHORT).show();
                 }
@@ -57,13 +71,11 @@ public class EditarPerfilActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isPasswordVisible) {
                     // Hide password
-                    olePassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                     etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                     etPassword1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                     btnTogglePassword.setText("Mostrar");
                 } else {
                     // Show password
-                    olePassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                     etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                     etPassword1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                     btnTogglePassword.setText("Ocultar");
@@ -76,7 +88,34 @@ public class EditarPerfilActivity extends AppCompatActivity {
 
     }
 
+    private boolean minimoCaracteres(String input) {
+        return input != null && input.length() > 8;
+    }
+
+
     private boolean isEqualPass() {
         return etPassword.getText().toString().trim().equals(etPassword1.getText().toString().trim());
     }
+
+    private void updContrasena(String newPassword) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            user.updatePassword(newPassword)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                // Password updated
+                                Toast.makeText(EditarPerfilActivity.this, "Contrasena actualizada exitosamente!", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(EditarPerfilActivity.this, PerfilActivity.class));
+                            } else {
+                                // If update fails, display a message to the user.
+                                Toast.makeText(EditarPerfilActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+    }
+
 }

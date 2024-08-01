@@ -14,7 +14,7 @@
         android:layout_height="55dp"
         android:layout_marginStart="54dp"
         android:layout_marginEnd="54dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="20dp"
         android:background="@color/transp"
         android:ems="10"
         android:hint="Correo"
@@ -30,23 +30,22 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="423dp"
         android:backgroundTint="@color/verde"
-        android:text="Enviar Contrasena"
+        android:text="Enviar correo de recuperacion"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
+        app:layout_constraintTop_toBottomOf="@+id/emailRecup" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="142dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="11dp"
+        android:layout_marginTop="100dp"
         android:text="Recuperar cuenta con correo"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextEmailAddress"
-        app:layout_constraintEnd_toEndOf="@+id/editTextTextEmailAddress"
+        app:layout_constraintBottom_toTopOf="@+id/emailRecup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

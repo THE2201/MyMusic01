@@ -97,7 +97,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
 
-        Toast.makeText(this, "Logged Used is: "+FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Logged: "+FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
 
     }
 
