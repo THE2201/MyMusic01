@@ -17,7 +17,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.example.mymusic.Activities.Inicio.DashboardActivity;
 import com.example.mymusic.Activities.Inicio.LoginActivity;
 import com.example.mymusic.R;
@@ -38,12 +37,16 @@ import com.android.volley.toolbox.Volley;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.mymusic.Network.UsuariosRest;
+
 
 public class RegistroActivity extends AppCompatActivity {
     EditText nombre, apellido, usuario, correo, contrasena;
     Button btRegistrar, btTengoCuenta;
     FirebaseAuth fAuth;
     ProgressBar progressBar;
+
+    private UsuariosRest usuariosRest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,8 @@ public class RegistroActivity extends AppCompatActivity {
         btTengoCuenta = findViewById(R.id.btTengoCuenta);
         fAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progressBar);
+
+        usuariosRest = new UsuariosRest(this);
 
         if (fAuth.getCurrentUser() != null) {
             startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
@@ -97,178 +102,91 @@ public class RegistroActivity extends AppCompatActivity {
                     return;
                 }
 
-
                 if (TextUtils.isEmpty(vCorreo)) {
                     correo.setError("Correo es requerido");
                     return;
                 }
 
                 if (TextUtils.isEmpty(vPasswd)) {
-                    contrasena.setError("Contrasena requerida");
+                    contrasena.setError("Contraseña requerida");
                     return;
                 }
 
                 if (vPasswd.length() < 8) {
-                    contrasena.setError("Debes tener 8 caracteres como minimo en contrasena!");
+                    contrasena.setError("Debes tener 8 caracteres como minimo en contraseña!");
                     return;
                 }
 
-                if (usuarioTieneCuenta(vUsuario)) {
-                    usuario.setError("nombre de usuario ya esta tomado");
-                    return;
-                }
-
-                if (correoTieneCuenta(vCorreo)) {
-                    correo.setError("El correo ya esta enlazado a cuenta");
-                    return;
-                }
-
-                progressBar.setVisibility(View.VISIBLE);
-
-                //Registrar usuario
-                fAuth.createUserWithEmailAndPassword(vCorreo, vPasswd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                // Validar nombre de usuario
+                usuariosRest.validarUsuario(vUsuario, new UsuariosRest.UsuarioRestListener() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = fAuth.getCurrentUser();
-                            String uid = user.getUid();
-
-
-                            //Si usuarioCreado -> DashboardActivity
-                            crearUsuarioSQL(uid, vNombre, vApellido, vUsuario, vCorreo, "noInsertada");
-                            Toast.makeText(RegistroActivity.this, "Cuenta creada con exito!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
-
-                        } else {
-                            Toast.makeText(RegistroActivity.this, "Error " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
+                    public void onResponse(boolean exists) {
+                        if (exists) {
+                            usuario.setError("El nombre de usuario ya está registrado");
+                            return;
                         }
+
+                        // Validar correo
+                        usuariosRest.validarCorreo(vCorreo, new UsuariosRest.UsuarioRestListener() {
+                            @Override
+                            public void onResponse(boolean exists) {
+                                if (exists) {
+                                    correo.setError("El correo ya está enlazado a una cuenta.");
+                                } else {
+                                    //registro
+                                    registrarUsuario(vNombre, vApellido, vUsuario, vCorreo, vPasswd);
+                                }
+                            }
+
+                            @Override
+                            public void onError(String error) {
+                                Toast.makeText(RegistroActivity.this, "Error en la validación del correo: " + error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(RegistroActivity.this, "Error en la validación del usuario: " + error, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
-
-
     }
 
-    private boolean usuarioTieneCuenta(String usuario) {
-        String url = "http://34.125.8.146/verificacionUsuario.php";
+    private void registrarUsuario(String vNombre, String vApellido, String vUsuario, String vCorreo, String vPasswd) {
+        fAuth.createUserWithEmailAndPassword(vCorreo, vPasswd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    FirebaseUser user = fAuth.getCurrentUser();
+                    String uid = user.getUid();
 
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("usuario", usuario);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, postData, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            boolean exists = response.getBoolean("exists");
-                            if (exists) {
-                                // Email exists
-                                Toast.makeText(RegistroActivity.this, "Usuario ya tomado", Toast.LENGTH_SHORT).show();
-                                finish(); //No estoy muy seguro de este Finish();
-                            } else {
-                                // Email does not exist
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    //Si usuarioCreado -> DashboardActivity
+                    progressBar.setVisibility(View.VISIBLE);
+                    // Crear un usuario
+                    usuariosRest.createUser(uid, vNombre, vApellido, vUsuario, vCorreo, "", new UsuariosRest.VolleyCallback() {
+                        @Override
+                        public void onSuccess(String result) {
+                            //Toast.makeText(RegistroActivity.this, "creado", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Handle error
-                        Toast.makeText(RegistroActivity.this, "Error servidor", Toast.LENGTH_SHORT).show();
-                    }
-                });
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonObjectRequest);
 
-        return false;
-    }
-
-    private boolean correoTieneCuenta(String correo) {
-        String url = "http://34.125.8.146/verificacionCorreo.php";
-        //prueba COMMIT en git
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("correo", correo);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, postData, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            boolean exists = response.getBoolean("exists");
-                            if (exists) {
-                                // Email exists
-                                Toast.makeText(RegistroActivity.this, "Correo ya asociado a cuenta", Toast.LENGTH_SHORT).show();
-                                finish();
-                            } else {
-                                // Email does not exist
-
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onError(String result) {
+                            //Toast.makeText(RegistroActivity.this, "cuenta no creada", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Handle error
-                        Toast.makeText(RegistroActivity.this, "Error servidor", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    });
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonObjectRequest);
-
-        return false;
-    }
-
-    private void crearUsuarioSQL(String uid, String vNombre, String vApellido, String vUsuario, String vCorreo, String noInsertada) {
-
-        String url = "http://34.125.8.146/crearUsuario.php";
-        JSONObject jsonBody = new JSONObject();
-        try {
-            jsonBody.put("FirebaseUid", uid);
-            jsonBody.put("Nombre", vNombre);
-            jsonBody.put("Apellido", vApellido);
-            jsonBody.put("Usuario", vUsuario);
-            jsonBody.put("Correo", vCorreo);
-            jsonBody.put("FotoUsuario", "noInsertada");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
-                response -> {
-                    Log.d("Response", response.toString());
-
+                    //Toast
                     Toast.makeText(RegistroActivity.this, "Cuenta creada con exito!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Error: ", error.toString());
+
+                } else {
+                    Toast.makeText(RegistroActivity.this, "Error " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                }
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                return headers;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonObjectRequest);
+        });
     }
 
 
