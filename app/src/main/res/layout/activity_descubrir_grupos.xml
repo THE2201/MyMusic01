@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fondo_general"
-    tools:context="Activities.Grupos.DescubrirFragments.DescubrirGruposActivity">
+    tools:context="Activities.Grupos.DescubrirGruposActivity">
 
 
     <FrameLayout
@@ -17,7 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
-
     </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -30,6 +29,4 @@
         app:menu="@menu/bottom_nav_menu">
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

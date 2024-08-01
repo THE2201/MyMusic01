@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MyMusic</string>
+
+    <string-array name="dropdown_items">
+        <item>Seleccione</item>
+        <item>Audio</item>
+        <item>Video</item>
+    </string-array>
 </resources>
