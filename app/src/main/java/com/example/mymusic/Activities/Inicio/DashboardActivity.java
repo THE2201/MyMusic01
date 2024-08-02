@@ -19,6 +19,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.example.mymusic.Activities.Grabadora.GrabadoraActivity;
 import com.example.mymusic.Activities.Grupos.CrearGrupoActivity;
 import com.example.mymusic.Activities.Grupos.DescubrirGruposActivity;
@@ -26,9 +28,14 @@ import com.example.mymusic.Activities.Grupos.MisGruposActivity;
 import com.example.mymusic.Activities.Solicitudes.SolicitudesActivity;
 import com.example.mymusic.Fragments.DescubrirVideoFragment;
 import com.example.mymusic.Fragments.DescubrirAudioFragment;
+import com.example.mymusic.Network.UsuariosRest;
 import com.example.mymusic.R;
 import com.example.mymusic.Activities.Usuario.PerfilActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -36,6 +43,8 @@ public class DashboardActivity extends AppCompatActivity {
     Button btn_descubrir_gaudios, btn_descubrir_gvideos, btn_descubrir_vermas;
     ImageButton btn_mis_grupos, btn_crear_grupo, btn_grabadora, btn_solicitudes;
     TextView txtbienvenida;
+    FirebaseAuth fAuth;
+    private UsuariosRest usuariosRest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +62,11 @@ public class DashboardActivity extends AppCompatActivity {
         btn_solicitudes = findViewById(R.id.btn_solicitudes);
 
         txtbienvenida = findViewById(R.id.txtbienvenida);
+
+        fAuth = FirebaseAuth.getInstance();
+        usuariosRest = new UsuariosRest(this);
+        FirebaseUser user = fAuth.getCurrentUser();
+        String uid = user.getUid();
 
         btn_descubrir_gaudios.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,8 +113,29 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
 
-        Toast.makeText(this, "Logged: "+FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Logged: "+FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "uid: "+uid, Toast.LENGTH_SHORT).show();
 
+        //Llamar aqui a la funcion para que en txtbienvenida se ponga el texto "BIENVENIDO + Usuario"
+        if (user != null) {
+            usuariosRest.getUser(uid, new UsuariosRest.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        String username = jsonObject.getString("Usuario");
+                        txtbienvenida.setText("BIENVENIDO " + username.toUpperCase());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(DashboardActivity.this, "Error al obtener el usuario: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
