@@ -62,8 +62,8 @@ public class UsuariosRest {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void getUser(int id, final VolleyCallback callback) {
-        String url = BASE_URL + "get_user.php?id=" + id;
+    public void getUser(String firebaseUid, final VolleyCallback callback) {
+        String url = BASE_URL + "get_user.php?FirebaseUid=" + firebaseUid;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
