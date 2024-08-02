@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <queries>
 
@@ -46,9 +46,14 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.Inicio.LoginActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+            android:name=".Activities.Grabadora.PlayGrabacionesActivity"
+            android:label="Grabacion Playback"
+            android:parentActivityName=".Activities.Grabadora.GrabacionesActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activities.Inicio.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
             android:name=".Activities.Playback.PlayAudioActivity"
             android:exported="true"
@@ -127,8 +132,8 @@
         <activity
             android:name=".Activities.Registro.RegistroActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
-            android:label="Registrarme" />
+            android:label="Registrarme"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
             android:name=".Activities.Inicio.DashboardActivity"
             android:exported="true"
@@ -136,8 +141,8 @@
         <activity
             android:name=".Activities.Inicio.ExtravioCuentaActivity"
             android:exported="true"
-            android:parentActivityName=".Activities.Inicio.LoginActivity"
-            android:label="Cuenta extraviada" />
+            android:label="Cuenta extraviada"
+            android:parentActivityName=".Activities.Inicio.LoginActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -148,7 +153,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 
         <provider
             android:name="androidx.core.content.FileProvider"

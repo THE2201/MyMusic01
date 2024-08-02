@@ -33,10 +33,10 @@ public class GrabacionesActivity extends AppCompatActivity {
         recyclerViewGrabaciones.setLayoutManager(new LinearLayoutManager(this));
 
         listaGrabs = new ArrayList<>();
-        listaGrabs.add(new GrabacionesModel("","Rec1", "22/01/2004","2:08min"));
-        listaGrabs.add(new GrabacionesModel("","Rec2", "22/01/2020","2:10min"));
+        listaGrabs.add(new GrabacionesModel("1","Rec1", "22/01/2004","2:08min"));
+        listaGrabs.add(new GrabacionesModel("2","Rec2", "22/01/2020","2:10min"));
 
-        adpGrab = new GrabacionesAdapter(listaGrabs);
+        adpGrab = new GrabacionesAdapter(this, listaGrabs);
         recyclerViewGrabaciones.setAdapter(adpGrab);
 
     }
