@@ -15,7 +15,7 @@
 
 
     <ImageView
-        android:id="@+id/caratula_grupov"
+        android:id="@+id/caratula_grupov_disp"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
@@ -31,7 +31,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/bt_entrar_grupov"
-        android:layout_toEndOf="@+id/caratula_grupov"
+        android:layout_toEndOf="@+id/caratula_grupov_disp"
         android:layout_weight="1"
         android:text="Mi grupo Video"
         android:textColor="#673AB7"
@@ -63,7 +63,7 @@
         android:src="@drawable/entrar_grupo_24" />
 
     <TextView
-        android:id="@+id/cantidad_videos"
+        android:id="@+id/cantidad_videos_disp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/autor_gvideo"

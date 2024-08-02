@@ -24,7 +24,7 @@
         app:srcCompat="@drawable/video_default_24" />
 
     <TextView
-        android:id="@+id/titulo_adisponible"
+        android:id="@+id/titulo_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -41,8 +41,8 @@
         android:id="@+id/autor_video"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
-        android:layout_below="@+id/titulo_adisponible"
-        android:layout_alignStart="@+id/titulo_adisponible"
+        android:layout_below="@+id/titulo_video"
+        android:layout_alignStart="@+id/titulo_video"
         android:layout_marginStart="0dp"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
@@ -61,7 +61,7 @@
         android:src="@drawable/play_video_24" />
 
     <TextView
-        android:id="@+id/cantidad_audios"
+        android:id="@+id/duration_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/autor_video"

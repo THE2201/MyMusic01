@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,15 +26,27 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.mymusic.Activities.Inicio.DashboardActivity;
 import com.example.mymusic.Activities.Usuario.PerfilActivity;
 import com.example.mymusic.R;
+import com.google.firebase.auth.FirebaseAuth;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 public class GrabadoraActivity extends AppCompatActivity {
@@ -119,10 +133,27 @@ public class GrabadoraActivity extends AppCompatActivity {
         }
     }
 
+    private String encodeAudioFileToBase64() {
+        File audioFile = new File(audioFilePath);
+        byte[] audioBytes = new byte[(int) audioFile.length()];
+        try (InputStream is = new FileInputStream(audioFile)) {
+            int bytesRead = is.read(audioBytes);
+            if (bytesRead != audioFile.length()) {
+                throw new IOException("Error al leer el archivo.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        String encodedString = Base64.encodeToString(audioBytes, Base64.DEFAULT);
+        Log.d("GrabacionB64Check:", encodedString);
+        return encodedString;
+    }
+
     public static String createName(){
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String id = UUID.randomUUID().toString();
-        return "Recording_"+timeStamp+"_"+id+".3gp";
+        //String id = UUID.randomUUID().toString();
+        return "Recording_"+timeStamp+".3gp";
     }
 
     private void elapsedCounter(){
@@ -155,7 +186,43 @@ public class GrabadoraActivity extends AppCompatActivity {
         elapsed.setText("00:00");
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
+
+        encodeAudioFileToBase64();
+
+
+        //Con esta funcion se guarda
+        //guardarGrabacion();
     }
+
+    private void guardarGrabacion() {
+        String url = "http://34.125.8.146/guardarGrabacion.php";
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("Titulo", saveAs);
+            jsonBody.put("GrabacionData", encodeAudioFileToBase64());
+            jsonBody.put("SubidoPorId", "");
+            jsonBody.put("EstadoGrabacion", "1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+                response -> {
+                    Log.d("Response", response.toString());
+                    Toast.makeText(getApplicationContext(), "Guardado con exito!", Toast.LENGTH_SHORT).show();
+                },error -> Log.e("Error", error.toString())) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonObjectRequest);
+    }
+
+
+
 
     private boolean checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED

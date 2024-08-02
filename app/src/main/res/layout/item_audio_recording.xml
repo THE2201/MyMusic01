@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@drawable/bordes"
     android:padding="16dp">
 
     <TextView
@@ -27,14 +28,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:textColor="#673AB7"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/bt_share_recording"
         android:layout_toEndOf="@+id/icon_recorder"
         android:layout_weight="1"
         android:text="AUD"
-        android:textStyle="bold"
-        android:textSize="20sp" />
+        android:textColor="@color/negro"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/recording_timestamp"
