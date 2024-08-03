@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -21,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mymusic.Activities.Inicio.LoginActivity;
 import com.example.mymusic.R;
 
 import java.io.File;
@@ -42,7 +45,8 @@ public class SubirAudioActivity extends AppCompatActivity {
     String formatDuration;
 
 
-    EditText duracionAudioSeleccionadoSubir;
+    TextView subir_audio_engrupo;
+    EditText duracionAudioSeleccionadoSubir, titulo_audio_subir;
     Button bt_playaudio_sel_subir;
 
     @Override
@@ -52,6 +56,8 @@ public class SubirAudioActivity extends AppCompatActivity {
 
         duracionAudioSeleccionadoSubir = findViewById(R.id.duracionAudioSeleccionadoSubir);
         bt_playaudio_sel_subir = findViewById(R.id.bt_playaudio_sel_subir);
+        subir_audio_engrupo = findViewById(R.id.subir_audio_engrupo);
+        titulo_audio_subir = findViewById(R.id.titulo_audio_subir);
 
         Button buttonSelectAudio = findViewById(R.id.buttonSelectAudio);
         Button buttonUpload = findViewById(R.id.buttonUpload);
@@ -191,6 +197,20 @@ public class SubirAudioActivity extends AppCompatActivity {
     }
 
     private void uploadAudio(Uri audioUri) throws IOException {
+            String vTituloAudio = titulo_audio_subir.getText().toString().trim();
+            String vDuracionAudio = duracionAudioSeleccionadoSubir.getText().toString().trim();
+            
+        if(TextUtils.isEmpty(vTituloAudio)){
+            titulo_audio_subir.setError("Titulo requerido");
+            Toast.makeText(SubirAudioActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(vDuracionAudio)){
+            duracionAudioSeleccionadoSubir.setError("Seleccione un audio leer su duracion");
+            Toast.makeText(SubirAudioActivity.this, "Elija un audio", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String url = BASE_URL+ "guardarAudio.php";
         RequestQueue queue = Volley.newRequestQueue(this);
 
