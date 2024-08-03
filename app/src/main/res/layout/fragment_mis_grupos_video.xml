@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fondo_general"
+    android:background="@drawable/bg_general"
     tools:context=".Fragments.MisGruposVideoFragment">
 
     <!-- TODO: Update blank fragment layout -->

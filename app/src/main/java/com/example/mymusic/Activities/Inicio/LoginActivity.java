@@ -1,5 +1,6 @@
 package com.example.mymusic.Activities.Inicio;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.AnimationDrawable;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -32,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar progressBar2;
 
     FirebaseAuth fAuth;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         iniciarBg();
+
+        sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+        // Aca reviso si usuario esta iniciado y lo manda diuan al dashboard
+        if (sharedPreferences.getBoolean("isLoggedIn", false)) {
+            startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+        }
 
         logCorreo = findViewById(R.id.logCorreo);
         logPasswd = findViewById(R.id.logPasswd);
@@ -86,8 +95,8 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Toast.makeText(LoginActivity.this, "Bienvenido", Toast.LENGTH_SHORT).show();
-                            Toast.makeText(LoginActivity.this, "Usuario actual: "+ fAuth.getCurrentUser(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(LoginActivity.this, "Bienvenido", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(LoginActivity.this, "Usuario actual: "+ fAuth.getCurrentUser(), Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
                             finish();
                         }else{

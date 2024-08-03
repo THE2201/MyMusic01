@@ -1,8 +1,20 @@
 package com.example.mymusic.Activities.Grabadora;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
@@ -20,9 +32,12 @@ import java.util.List;
 
 public class GrabacionesActivity extends AppCompatActivity {
 
+    //para llenar lista de grabaciones
     private RecyclerView recyclerViewGrabaciones;
     private GrabacionesAdapter adpGrab;
     private List<GrabacionesModel> listaGrabs;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,5 +54,9 @@ public class GrabacionesActivity extends AppCompatActivity {
         adpGrab = new GrabacionesAdapter(this, listaGrabs);
         recyclerViewGrabaciones.setAdapter(adpGrab);
 
+
+
     }
+
+
 }

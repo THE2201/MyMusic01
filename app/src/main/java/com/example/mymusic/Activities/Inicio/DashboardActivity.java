@@ -1,6 +1,8 @@
 package com.example.mymusic.Activities.Inicio;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,6 +46,8 @@ public class DashboardActivity extends AppCompatActivity {
     ImageButton btn_mis_grupos, btn_crear_grupo, btn_grabadora, btn_solicitudes;
     TextView txtbienvenida;
     FirebaseAuth fAuth;
+    private SharedPreferences sharedPreferences;
+
     private UsuariosRest usuariosRest;
 
     @Override
@@ -64,6 +68,8 @@ public class DashboardActivity extends AppCompatActivity {
         txtbienvenida = findViewById(R.id.txtbienvenida);
 
         fAuth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+
         usuariosRest = new UsuariosRest(this);
         FirebaseUser user = fAuth.getCurrentUser();
         String uid = user.getUid();
@@ -159,6 +165,10 @@ public class DashboardActivity extends AppCompatActivity {
     //View view
     public void logout() {
         FirebaseAuth.getInstance().signOut();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+
         Toast.makeText(this, "Sesion cerrada", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         finish();
