@@ -120,11 +120,11 @@ public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.
 
     }
 
-    private void compartirGrabacion(String id,String titulo, int position) {
-        Toast.makeText(context, "Compartir: "+id, Toast.LENGTH_SHORT).show();
-
-
-    }
+//    private void compartirGrabacion(String id,String titulo, int position) {
+//        Toast.makeText(context, "Compartir: "+id, Toast.LENGTH_SHORT).show();
+//
+//
+//    }
 
     public void compartirGrabacion(String idGrabacion , String titulo){
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

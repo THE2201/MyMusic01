@@ -5,4 +5,8 @@
     <item android:id="@+id/editar_perfil"
         android:title="Editar perfil"
         app:showAsAction="never"/>
+
+    <item android:id="@+id/eliminar_cuenta"
+        android:title="Eliminar cuenta"
+        app:showAsAction="never"/>
 </menu>

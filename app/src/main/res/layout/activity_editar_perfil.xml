@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_general"
     tools:context=".MainActivity">
 
@@ -41,6 +42,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
+        app:cornerRadius="10dp"
+        android:backgroundTint="@color/boton1"
         android:layout_marginBottom="150dp"
         android:text="Mostrar" />
 
@@ -53,7 +56,9 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
+        android:backgroundTint="@color/boton1"
         android:layout_marginBottom="20dp"
+        app:cornerRadius="10dp"
         android:text="Confirmar" />
 
     <Button
@@ -63,9 +68,11 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="105dp"
-        android:layout_marginEnd="105dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
         android:layout_marginBottom="50dp"
+        app:cornerRadius="10dp"
+        android:backgroundTint="@color/boton1"
         android:text="Cancelar" />
 
 </RelativeLayout>

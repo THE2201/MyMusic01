@@ -160,6 +160,7 @@ public class RegistroActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser user = fAuth.getCurrentUser();
+                    sendVerificationToEmail(user);
                     String uid = user.getUid();
 
                     //Si usuarioCreado -> DashboardActivity
@@ -189,6 +190,18 @@ public class RegistroActivity extends AppCompatActivity {
         });
     }
 
+    private void sendVerificationToEmail(FirebaseUser user) {
+        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(RegistroActivity.this, "Verifica tu cuenta en el correo", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(RegistroActivity.this, "Error al enviar correo de verificacion", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     private void iniciarBg() {
         ConstraintLayout constraintLayout = findViewById(R.id.reg);

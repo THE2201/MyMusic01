@@ -153,8 +153,11 @@ public class PerfilActivity extends AppCompatActivity {
             vNombre = nombre.getText().toString().trim();
             vApellido = apellido.getText().toString().trim();
 
-        } else{
+        }else if(item.getItemId()==R.id.eliminar_cuenta){
+            startActivity(new Intent(PerfilActivity.this, EliminarCuentaActivity.class));
+        }else{
             return super.onOptionsItemSelected(item);
+
         }
         return true;
     }

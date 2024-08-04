@@ -1,5 +1,10 @@
 package com.example.mymusic.Adapters;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -9,23 +14,58 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mymusic.Activities.Grupos.GrupoAudioActivity;
+import com.example.mymusic.Activities.Grupos.SubirAudioActivity;
+import com.example.mymusic.Models.GrupoModel;
 import com.example.mymusic.R;
 
+import java.util.List;
+
 public class GrupoDisponibleAudioAdapter extends RecyclerView.Adapter<GrupoDisponibleAudioAdapter.ViewHolder>{
+    private List <GrupoModel> ListaGrupoaDisponible;
+    private Context context;
+
     @NonNull
     @Override
     public GrupoDisponibleAudioAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grupo_disponible_audio, parent, false);
+        return new GrupoDisponibleAudioAdapter.ViewHolder(view);
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull GrupoDisponibleAudioAdapter.ViewHolder holder, int position) {
+        GrupoModel grupoModel = ListaGrupoaDisponible.get(position);
+        holder.id_grupoa_api.setText(grupoModel.getIdGrupo());
+        holder.titulo_adisponible.setText(grupoModel.getNombreGrupo());
+        holder.cantidad_audios_disp.setText(grupoModel.getCantidadAudios());
 
+        holder.bt_entrar_grupoa.setOnClickListener(v -> {
+           irAGrupo(grupoModel.getIdGrupo(), grupoModel.getNombreGrupo(), grupoModel.getCantidadAudios());
+        });
+
+    }
+
+    public void irAGrupo(int idGrupo, String nombreGrupo, String cantidadAudios) {
+        ContentValues cv = new ContentValues();
+        cv.put("idGrupo", idGrupo);
+        cv.put("nombreGrupo", nombreGrupo);
+        cv.put("cantidadAudios",cantidadAudios);
+
+        if (context != null) {
+            Intent intent = new Intent(context, GrupoAudioActivity.class);
+            for (String key : cv.keySet()) {
+                intent.putExtra(key, cv.getAsString(key));
+            }
+            context.startActivity(intent);
+        } else {
+            Log.e("GrupoAudioAdapter", "Contexto nulo");
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return ListaGrupoaDisponible.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -43,4 +83,6 @@ public class GrupoDisponibleAudioAdapter extends RecyclerView.Adapter<GrupoDispo
             bt_entrar_grupoa = itemView.findViewById(R.id.bt_entrar_grupoa);
         }
     }
+
+
 }

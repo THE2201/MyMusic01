@@ -46,10 +46,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Usuario.EliminarCuentaActivity"
+            android:parentActivityName=".Activities.Usuario.PerfilActivity"
+            android:label="Eliminar cuenta"
+            android:exported="true" />
+        <activity
             android:name=".Activities.Grabadora.PlayGrabacionesActivity"
+            android:exported="false"
             android:label="Grabacion Playback"
-            android:parentActivityName=".Activities.Grabadora.GrabacionesActivity"
-            android:exported="false" />
+            android:parentActivityName=".Activities.Grabadora.GrabacionesActivity" />
         <activity
             android:name=".Activities.Inicio.LoginActivity"
             android:exported="false"
