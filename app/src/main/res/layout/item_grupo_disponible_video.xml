@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:background="@drawable/bordes"
+    android:padding="15dp">
 
     <TextView
         android:id="@+id/id_grupov_api"
@@ -30,6 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
+        android:fontFamily="sans-serif-condensed-light"
         android:layout_toStartOf="@+id/bt_entrar_grupov"
         android:layout_toEndOf="@+id/caratula_grupov_disp"
         android:layout_weight="1"
@@ -48,6 +50,7 @@
         android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:text="JorgeMusic"
+        android:fontFamily="sans-serif-condensed-light"
         android:textSize="16sp" />
 
     <ImageButton
@@ -70,6 +73,7 @@
         android:layout_alignStart="@+id/autor_gvideo"
         android:layout_marginStart="0dp"
         android:layout_marginTop="5dp"
+        android:fontFamily="sans-serif-condensed-light"
         android:text="5 Videos"
         android:textSize="12sp" />
 

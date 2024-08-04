@@ -1,5 +1,6 @@
 package com.example.mymusic.Activities.Grupos;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,6 +21,20 @@ public class GrupoVideoActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_grupo_video);
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                ContentValues cv = new ContentValues();
+                for (String key : bundle.keySet()) {
+                    cv.put(key, bundle.getString(key));
+                }
+                String idGrupo = cv.getAsString("idGrupo");
+                String nombreGrupo = cv.getAsString("nombreGrupo");
+                String cantidadVideos = cv.getAsString("cantidadVideos");
+                Toast.makeText(this, idGrupo+" "+nombreGrupo+" "+cantidadVideos, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.opciones_grupo_video,menu);
@@ -31,11 +46,7 @@ public class GrupoVideoActivity extends AppCompatActivity {
             intent = new Intent(GrupoVideoActivity.this, SubirVideoActivity.class);
             startActivity(intent);
         }
-        else if(item.getItemId()==R.id.abandonar_grupo_video){
-//            intent = new Intent(GrupoAudioActivity.this, getParent().getClass());
-//            startActivity(intent);
-            Toast.makeText(this, "Abandonar gVideo", Toast.LENGTH_SHORT).show();
-        } else{
+       else{
             return super.onOptionsItemSelected(item);
         }
         return true;

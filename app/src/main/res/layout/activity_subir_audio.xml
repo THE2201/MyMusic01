@@ -16,6 +16,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="100dp"
         android:backgroundTint="#B3E5FC"
+        app:cornerRadius="10dp"
         android:fontFamily="sans-serif-condensed-light"
         android:text="Seleccionar un audio" />
 
@@ -76,6 +77,7 @@
         android:fontFamily="sans-serif-condensed-light"
         android:backgroundTint="#B3E5FC"
         app:icon="@mipmap/mas"
+        app:cornerRadius="10dp"
         android:text="Subir audio" />
 
     <TextView
@@ -120,6 +122,7 @@
         android:layout_marginEnd="120dp"
         android:fontFamily="sans-serif-condensed-light"
         android:enabled="false"
+        app:cornerRadius="10dp"
         android:backgroundTint="#64B5F6"
         android:text="Reproducir" />
 

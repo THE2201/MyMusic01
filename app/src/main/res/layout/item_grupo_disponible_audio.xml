@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:background="@drawable/bordes"
+    android:padding="15dp">
 
     <TextView
         android:id="@+id/id_grupoa_api"
@@ -32,6 +33,7 @@
         android:layout_toStartOf="@+id/bt_entrar_grupoa"
         android:layout_toEndOf="@+id/caratula_grupoa_disp"
         android:layout_weight="1"
+        android:fontFamily="sans-serif-condensed-light"
         android:text="Mi grupo Audio"
         android:textColor="#673AB7"
         android:textSize="20sp"
@@ -45,6 +47,7 @@
         android:layout_alignStart="@+id/titulo_adisponible"
         android:layout_marginStart="0dp"
         android:layout_marginTop="10dp"
+        android:fontFamily="sans-serif-condensed-light"
         android:layout_weight="1"
         android:text="JorgeMusic"
         android:textSize="16sp" />
@@ -70,6 +73,7 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="5dp"
         android:text="5 Audios"
+        android:fontFamily="sans-serif-condensed-light"
         android:textSize="12sp" />
 
 </RelativeLayout>

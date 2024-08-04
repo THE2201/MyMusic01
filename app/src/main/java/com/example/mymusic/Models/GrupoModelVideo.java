@@ -1,17 +1,17 @@
 package com.example.mymusic.Models;
 
-public class GrupoModel {
+public class GrupoModelVideo {
     private String idGrupo;
     private String nombreGrupo;
-    private String cantidadAudios;
+    private String cantidadVideos;
 
-    public GrupoModel() {
+    public GrupoModelVideo() {
     }
 
-    public GrupoModel(String idGrupo, String nombreGrupo, String cantidadAudios) {
+    public GrupoModelVideo(String idGrupo, String nombreGrupo, String cantidadVideos) {
         this.idGrupo = idGrupo;
         this.nombreGrupo = nombreGrupo;
-        this.cantidadAudios = cantidadAudios;
+        this.cantidadVideos = cantidadVideos;
     }
 
     public String getIdGrupo() {
@@ -22,8 +22,8 @@ public class GrupoModel {
         return nombreGrupo;
     }
 
-    public String getCantidadAudios() {
-        return cantidadAudios + " Audios";
+    public String getCantidadVideos() {
+        return cantidadVideos + " Videos";
     }
 }
 

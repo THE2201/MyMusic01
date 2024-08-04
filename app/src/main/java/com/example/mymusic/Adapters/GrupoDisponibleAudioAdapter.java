@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mymusic.Activities.Grupos.GrupoAudioActivity;
 import com.example.mymusic.Activities.Grupos.SubirAudioActivity;
+import com.example.mymusic.Models.GrabacionesModel;
 import com.example.mymusic.Models.GrupoModel;
 import com.example.mymusic.R;
 
@@ -33,6 +34,11 @@ public class GrupoDisponibleAudioAdapter extends RecyclerView.Adapter<GrupoDispo
 
     }
 
+    public GrupoDisponibleAudioAdapter(Context context, List<GrupoModel> ListaGrupoaDisponible){
+        this.context = context;
+        this.ListaGrupoaDisponible = ListaGrupoaDisponible;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull GrupoDisponibleAudioAdapter.ViewHolder holder, int position) {
         GrupoModel grupoModel = ListaGrupoaDisponible.get(position);
@@ -40,13 +46,14 @@ public class GrupoDisponibleAudioAdapter extends RecyclerView.Adapter<GrupoDispo
         holder.titulo_adisponible.setText(grupoModel.getNombreGrupo());
         holder.cantidad_audios_disp.setText(grupoModel.getCantidadAudios());
 
+
         holder.bt_entrar_grupoa.setOnClickListener(v -> {
            irAGrupo(grupoModel.getIdGrupo(), grupoModel.getNombreGrupo(), grupoModel.getCantidadAudios());
         });
 
     }
 
-    public void irAGrupo(int idGrupo, String nombreGrupo, String cantidadAudios) {
+    public void irAGrupo(String idGrupo, String nombreGrupo, String cantidadAudios) {
         ContentValues cv = new ContentValues();
         cv.put("idGrupo", idGrupo);
         cv.put("nombreGrupo", nombreGrupo);
@@ -75,6 +82,7 @@ public class GrupoDisponibleAudioAdapter extends RecyclerView.Adapter<GrupoDispo
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             id_grupoa_api = itemView.findViewById(R.id.id_grupoa_api);
             titulo_adisponible = itemView.findViewById(R.id.titulo_adisponible);
             autor_gaudio = itemView.findViewById(R.id.autor_gaudio);

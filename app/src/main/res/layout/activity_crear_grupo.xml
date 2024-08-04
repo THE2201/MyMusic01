@@ -8,4 +8,80 @@
     android:background="@drawable/bg_general"
     tools:context="Activities.Grupos.CrearGrupoActivity">
 
+    <ImageView
+        android:id="@+id/CaratulaGrupo"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/groups_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/NombreGrupo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_marginTop="20dp"
+        android:enabled="false"
+        android:textAlignment="center"
+        android:hint="Nombre de grupo"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_seleccionar_caratula" />
+
+
+    <Spinner
+        android:id="@+id/spinner_crear_grupo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:layout_marginTop="20dp"
+        android:background="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/NombreGrupo" />
+
+    <Button
+        android:id="@+id/btn_seleccionar_caratula"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed-light"
+        android:text="Seleccionar portada"
+        android:backgroundTint="#64B5F6"
+        android:layout_marginTop="20dp"
+        app:cornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/CaratulaGrupo"
+        app:layout_constraintStart_toStartOf="@+id/CaratulaGrupo"
+        app:layout_constraintTop_toBottomOf="@+id/CaratulaGrupo" />
+
+    <Button
+        android:id="@+id/btn_crear_grupo"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed-light"
+        android:text="Crear grupo"
+        app:cornerRadius="10dp"
+        android:backgroundTint="#64B5F6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_crear_grupo" />
+
+    <Button
+        android:id="@+id/btn_cancelar_crear_grupo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed-light"
+        android:text="Cancelar"
+        android:backgroundTint="#FF8A65"
+        app:cornerRadius="10dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_crear_grupo" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

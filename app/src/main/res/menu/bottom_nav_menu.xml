@@ -4,10 +4,12 @@
     <item
         android:icon="@drawable/baseline_music_video_24"
         android:id="@+id/audiobottom"
+        android:fontFamily="sans-serif-condensed-light"
         android:title="Audio" />
     <item
         android:icon="@drawable/baseline_ondemand_video_24"
         android:id="@+id/videobottom"
+        android:fontFamily="sans-serif-condensed-light"
         android:title="Video" />
 
 </menu>

@@ -1,5 +1,6 @@
 package com.example.mymusic.Activities.Grupos;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,13 +21,22 @@ public class GrupoAudioActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_grupo_audio);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                ContentValues cv = new ContentValues();
+                for (String key : bundle.keySet()) {
+                    cv.put(key, bundle.getString(key));
+                }
+                String idGrupo = cv.getAsString("idGrupo");
+                String nombreGrupo = cv.getAsString("nombreGrupo");
+                String cantidadAudios = cv.getAsString("cantidadAudios");
+                Toast.makeText(this, idGrupo+" "+nombreGrupo+" "+cantidadAudios, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.opciones_grupo,menu);
@@ -37,12 +47,7 @@ public class GrupoAudioActivity extends AppCompatActivity {
        if(item.getItemId()==R.id.agregar_audio){
            intent = new Intent(GrupoAudioActivity.this, SubirAudioActivity.class);
            startActivity(intent);
-       }
-        else if(item.getItemId()==R.id.abandonar_grupo){
-//            intent = new Intent(GrupoAudioActivity.this, getParent().getClass());
-//            startActivity(intent);
-            Toast.makeText(this, "Abandonar gAudio", Toast.LENGTH_SHORT).show();
-        } else{
+       } else{
             return super.onOptionsItemSelected(item);
         }
         return true;

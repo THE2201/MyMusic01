@@ -78,12 +78,12 @@ public class EliminarCuentaActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(EliminarCuentaActivity.this, "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EliminarCuentaActivity.this, "Se elimino la cuenta", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(EliminarCuentaActivity.this, LoginActivity.class));
                                 finish();
                             } else {
                                 Log.w(TAG, "Falla al eliminar cuenta", task.getException());
-                                Toast.makeText(EliminarCuentaActivity.this, "Account deletion failed.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EliminarCuentaActivity.this, "Falla al eliminar cuenta", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
