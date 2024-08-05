@@ -3,6 +3,7 @@ package com.example.mymusic.Activities.Solicitudes;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,6 +39,11 @@ public class CrearSolicitudActivity extends AppCompatActivity {
         cancelar = findViewById(R.id.cancelar);
         titulo = findViewById(R.id.titulo);
         comentario = findViewById(R.id.comentario);
+        comentario.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
+        comentario.setSingleLine(false);
+        comentario.setVerticalScrollBarEnabled(true);
+        comentario.setMinLines(5);
+
         spinner = findViewById(R.id.spinner);
 
         crear_solicitud.setOnClickListener(new View.OnClickListener() {
