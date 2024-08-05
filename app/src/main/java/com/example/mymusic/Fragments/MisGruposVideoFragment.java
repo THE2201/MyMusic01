@@ -6,60 +6,46 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mymusic.Adapters.MiGrupoAudioAdapter;
+import com.example.mymusic.Adapters.MiGrupoVideoAdapter;
+import com.example.mymusic.Models.MiGrupoAudioModel;
+import com.example.mymusic.Models.MiGrupoVideoModel;
 import com.example.mymusic.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MisGruposVideoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class MisGruposVideoFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RecyclerView recyclerViewMiGrupoVideo;
+    private MiGrupoVideoAdapter adpMiGrupoVideo;
+    private List<MiGrupoVideoModel> ListaMiGrupoVideo;
 
     public MisGruposVideoFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MisGruposVideoFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MisGruposVideoFragment newInstance(String param1, String param2) {
-        MisGruposVideoFragment fragment = new MisGruposVideoFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static MisGruposVideoFragment newInstance() {
+        return new MisGruposVideoFragment();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_mis_grupos_video, container, false);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_mis_grupos_video, container, false);
+        recyclerViewMiGrupoVideo = view.findViewById(R.id.recyclerViewMiGrupoVideo);
+        recyclerViewMiGrupoVideo.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        ListaMiGrupoVideo = new ArrayList<>();
+        ListaMiGrupoVideo.add(new MiGrupoVideoModel("1","Grupo Video1", "10"));
+        ListaMiGrupoVideo.add(new MiGrupoVideoModel("11","Grupo EE2", "10"));
+        ListaMiGrupoVideo.add(new MiGrupoVideoModel("21","Grupo eera", "10"));
+
+        adpMiGrupoVideo = new MiGrupoVideoAdapter(getContext(), ListaMiGrupoVideo);
+        recyclerViewMiGrupoVideo.setAdapter(adpMiGrupoVideo);
+
+        return view;
     }
 }
