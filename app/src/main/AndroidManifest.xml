@@ -146,7 +146,7 @@
         <activity
             android:name=".Activities.Inicio.ExtravioCuentaActivity"
             android:exported="true"
-            android:label="Cuenta extraviada"
+            android:label="Olvide mi Contraseña"
             android:parentActivityName=".Activities.Inicio.LoginActivity" />
         <activity
             android:name=".MainActivity"

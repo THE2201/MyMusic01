@@ -169,8 +169,17 @@ public class DashboardActivity extends AppCompatActivity {
         editor.clear();
         editor.apply();
 
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         Toast.makeText(this, "Sesion cerrada", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
         finish();
+    }
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+        Toast.makeText(this, "No puede retroceder en este punto.", Toast.LENGTH_SHORT).show();
     }
 }

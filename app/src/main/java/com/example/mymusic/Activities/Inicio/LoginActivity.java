@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,6 +59,19 @@ public class LoginActivity extends AppCompatActivity {
         progressBar2 = findViewById(R.id.progressBar2);
         fAuth = FirebaseAuth.getInstance();
 
+
+        logPasswd.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Start login process
+                    login();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         btRegistro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,37 +88,41 @@ public class LoginActivity extends AppCompatActivity {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String vCorreo = logCorreo.getText().toString().trim();
-                String vPasswd = logPasswd.getText().toString().trim();
+                login();
+            }
+        });
+    }
 
-                if(TextUtils.isEmpty(vCorreo)){
-                    logCorreo.setError("Correo requerido");
-                    Toast.makeText(LoginActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+    private void login() {
+        String vCorreo = logCorreo.getText().toString().trim();
+        String vPasswd = logPasswd.getText().toString().trim();
 
-                if(TextUtils.isEmpty(vPasswd)){
-                    logPasswd.setError("Contrasena requerida");
-                    Toast.makeText(LoginActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                progressBar2.setVisibility(View.VISIBLE);
-                //Auth el usuario
+        if (TextUtils.isEmpty(vCorreo)) {
+            logCorreo.setError("Correo requerido");
+            Toast.makeText(LoginActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                fAuth.signInWithEmailAndPassword(vCorreo, vPasswd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
+        if (TextUtils.isEmpty(vPasswd)) {
+            logPasswd.setError("Contrasena requerida");
+            Toast.makeText(LoginActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        progressBar2.setVisibility(View.VISIBLE);
+        //Auth el usuario
+
+        fAuth.signInWithEmailAndPassword(vCorreo, vPasswd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
 //                            Toast.makeText(LoginActivity.this, "Bienvenido", Toast.LENGTH_SHORT).show();
 //                            Toast.makeText(LoginActivity.this, "Usuario actual: "+ fAuth.getCurrentUser(), Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
-                            finish();
-                        }else{
-                            Toast.makeText(LoginActivity.this, "Error "+ task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                            progressBar2.setVisibility(View.GONE);
-                        }
-                    }
-                });
+                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Error " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    progressBar2.setVisibility(View.GONE);
+                }
             }
         });
     }
