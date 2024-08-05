@@ -37,7 +37,7 @@ public class MiGrupoVideoAdapter extends RecyclerView.Adapter<MiGrupoVideoAdapte
             super(itemView);
             id_migrupov_api = itemView.findViewById(R.id.id_migrupov_api);
             titulo_migrupov = itemView.findViewById(R.id.titulo_migrupov);
-            miembros_gvideo = itemView.findViewById(R.id.miembros_gvideo);
+            //miembros_gvideo = itemView.findViewById(R.id.miembros_gvideo);
             cantidad_videos = itemView.findViewById(R.id.cantidad_videos);
             bt_salir_gvideo = itemView.findViewById(R.id.bt_salir_gvideo);
             caratula_grupov = itemView.findViewById(R.id.caratula_grupov);
