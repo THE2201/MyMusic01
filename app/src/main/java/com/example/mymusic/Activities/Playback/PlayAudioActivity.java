@@ -1,5 +1,7 @@
 package com.example.mymusic.Activities.Playback;
 
+import android.content.ContentValues;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -8,6 +10,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -16,7 +20,7 @@ import com.example.mymusic.R;
 public class PlayAudioActivity extends AppCompatActivity {
 
     private Button btnPlay, btnPause, btnStop;
-    private TextView tvCurrentTime, tvTotalTime;
+    private TextView tvCurrentTime, tvTotalTime,tituloCancion;
     private SeekBar seekBar;
     private MediaPlayer mediaPlayer;
     private Handler handler = new Handler();
@@ -33,6 +37,25 @@ public class PlayAudioActivity extends AppCompatActivity {
         tvCurrentTime = findViewById(R.id.tvCurrentTime);
         tvTotalTime = findViewById(R.id.tvTotalTime);
         seekBar = findViewById(R.id.seekBar);
+        tituloCancion = findViewById(R.id.tituloCancion);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                ContentValues cv = new ContentValues();
+                for (String key : bundle.keySet()) {
+                    cv.put(key, bundle.getString(key));
+                }
+                String idAudio = cv.getAsString("idAudio");
+                String tituloAudio  = cv.getAsString("tituloAudio");
+                String autorAudio = cv.getAsString("autorAudio");
+                String duracionAudio = cv.getAsString("duracionAudio");
+                tituloCancion.setText(tituloAudio+"\n"+autorAudio);
+                tvTotalTime.setText(duracionAudio);
+            }
+        }
+
 
         mediaPlayer = MediaPlayer.create(this, R.raw.sample_audio);
         seekBar.setMax(mediaPlayer.getDuration());
