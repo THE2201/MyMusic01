@@ -15,8 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mymusic.Activities.Grupos.GrupoAudioActivity;
-import com.example.mymusic.Activities.Grupos.SubirAudioActivity;
-import com.example.mymusic.Models.GrabacionesModel;
 import com.example.mymusic.Models.GrupoModel;
 import com.example.mymusic.R;
 

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@drawable/bordes"
     android:padding="16dp">
 
     <TextView
@@ -32,13 +33,14 @@
         android:layout_toStartOf="@+id/bt_salir_gaudio"
         android:layout_toEndOf="@+id/caratula_grupoa"
         android:layout_weight="1"
+        android:fontFamily="sans-serif-condensed-light"
         android:text="Mi grupo Audio"
         android:textColor="#673AB7"
         android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/miembros_gaudio"
+        android:id="@+id/cantidad_audios"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
         android:layout_below="@+id/titulo_migrupoa"
@@ -46,7 +48,8 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
-        android:text="20 Miembros"
+        android:fontFamily="sans-serif-condensed-light"
+        android:text="5 Audios"
         android:textSize="16sp" />
 
     <ImageButton
@@ -60,16 +63,4 @@
         android:backgroundTint="#E91E63"
         android:scaleType="fitCenter"
         android:src="@drawable/salir_gaudio_24" />
-
-    <TextView
-        android:id="@+id/cantidad_audios"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/miembros_gaudio"
-        android:layout_alignStart="@+id/miembros_gaudio"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="5dp"
-        android:text="5 Audios"
-        android:textSize="12sp" />
-
 </RelativeLayout>

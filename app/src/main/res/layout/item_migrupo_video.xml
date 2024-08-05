@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@drawable/bordes"
     android:padding="16dp">
 
     <TextView
@@ -33,12 +34,13 @@
         android:layout_toEndOf="@+id/caratula_grupov"
         android:layout_weight="1"
         android:text="Mi grupo Video"
+        android:fontFamily="sans-serif-condensed-light"
         android:textColor="#673AB7"
         android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/miembros_gvideo"
+        android:id="@+id/cantidad_videos"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
         android:layout_below="@+id/titulo_migrupov"
@@ -46,7 +48,8 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
-        android:text="20 Miembros"
+        android:fontFamily="sans-serif-condensed-light"
+        android:text="20 Videos"
         android:textSize="16sp" />
 
     <ImageButton
@@ -54,6 +57,7 @@
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:fontFamily="sans-serif-condensed-light"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
@@ -61,15 +65,5 @@
         android:scaleType="fitCenter"
         android:src="@drawable/salir_gaudio_24" />
 
-    <TextView
-        android:id="@+id/cantidad_videos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/miembros_gvideo"
-        android:layout_alignStart="@+id/miembros_gvideo"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="5dp"
-        android:text="5 Videos"
-        android:textSize="12sp" />
 
 </RelativeLayout>

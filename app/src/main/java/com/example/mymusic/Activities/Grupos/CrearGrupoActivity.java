@@ -65,10 +65,12 @@ public class CrearGrupoActivity extends AppCompatActivity {
                 String vNombreGrupo = NombreGrupo.getText().toString().trim();
                 String vTipo = spinner_crear_grupo.getSelectedItem().toString().trim();
 
-                if(base64String==null){
-                    Toast.makeText(CrearGrupoActivity.this, "No ha sleccionado foto", Toast.LENGTH_SHORT).show();
-                }
 
+
+                if(base64String==null){
+                    Toast.makeText(CrearGrupoActivity.this, "No ha seleccionado foto", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if(TextUtils.isEmpty(vNombreGrupo)){
                     NombreGrupo.setError("nombre requerido");
@@ -79,6 +81,8 @@ public class CrearGrupoActivity extends AppCompatActivity {
                     Toast.makeText(CrearGrupoActivity.this, "Seleccione tipo de grupo", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+
 
 
 
