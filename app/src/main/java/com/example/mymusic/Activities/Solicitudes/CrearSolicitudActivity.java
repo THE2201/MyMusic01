@@ -71,6 +71,7 @@ public class CrearSolicitudActivity extends AppCompatActivity {
                     return;
                 }
 
+                Toast.makeText(CrearSolicitudActivity.this, vTitulo+vComentario+vTipo, Toast.LENGTH_SHORT).show();
                 //guardarSolicitud(vTitulo, vComentario, vTipo, 125);
 
             }
