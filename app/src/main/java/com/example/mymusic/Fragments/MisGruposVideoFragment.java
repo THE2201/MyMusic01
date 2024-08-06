@@ -17,9 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.mymusic.Adapters.MiGrupoAudioAdapter;
 import com.example.mymusic.Adapters.MiGrupoVideoAdapter;
-import com.example.mymusic.Models.MiGrupoAudioModel;
 import com.example.mymusic.Models.MiGrupoVideoModel;
 import com.example.mymusic.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,22 +51,12 @@ public class MisGruposVideoFragment extends Fragment {
         recyclerViewMiGrupoVideo = view.findViewById(R.id.recyclerViewMiGrupoVideo);
         recyclerViewMiGrupoVideo.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        //ListaMiGrupoVideo = new ArrayList<>();
-        //ListaMiGrupoVideo.add(new MiGrupoVideoModel("1","Grupo Video1", "10"));
-        //ListaMiGrupoVideo.add(new MiGrupoVideoModel("11","Grupo EE2", "10"));
-        //ListaMiGrupoVideo.add(new MiGrupoVideoModel("21","Grupo eera", "10"));
-
-        //adpMiGrupoVideo = new MiGrupoVideoAdapter(getContext(), ListaMiGrupoVideo);
-        //recyclerViewMiGrupoVideo.setAdapter(adpMiGrupoVideo);
-
         ListaMiGrupoVideo = new ArrayList<>();
         adpMiGrupoVideo = new MiGrupoVideoAdapter(getContext(), ListaMiGrupoVideo);
         recyclerViewMiGrupoVideo.setAdapter(adpMiGrupoVideo);
 
-        // Initialize RequestQueue
         requestQueue = Volley.newRequestQueue(getContext());
 
-        // Fetch user video groups
         fetchUserVideoGroups();
 
         return view;
@@ -93,9 +81,10 @@ public class MisGruposVideoFragment extends Fragment {
                                     JSONObject jsonObject = response.getJSONObject(i);
                                     String id = jsonObject.getString("IdGrupo");
                                     String nombreGrupo = jsonObject.getString("NombreGrupo");
-                                    String totalVideos = jsonObject.getString("TotalAudios");
+                                    String caratulaGrupo = jsonObject.getString("CaratulaGrupo");
+                                    String totalVideos = jsonObject.getString("TotalVideos");
 
-                                    MiGrupoVideoModel grupo = new MiGrupoVideoModel(id, nombreGrupo, totalVideos);
+                                    MiGrupoVideoModel grupo = new MiGrupoVideoModel(id, nombreGrupo, caratulaGrupo, totalVideos);
                                     ListaMiGrupoVideo.add(grupo);
                                 } catch (JSONException e) {
                                     e.printStackTrace();

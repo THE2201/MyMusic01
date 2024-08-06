@@ -43,8 +43,7 @@ public class DescubrirVideoFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_descubrir_video, container, false);
 
@@ -62,14 +61,6 @@ public class DescubrirVideoFragment extends Fragment {
 
         // Fetch groups
         fetchVideoGroups();
-        // Initialize the list and adapter
-        //ListaGrupovDisponible = new ArrayList<>();
-       // ListaGrupovDisponible.add(new GrupoModelVideo("1","Grupo Primero Video", "10"));
-        //ListaGrupovDisponible.add(new GrupoModelVideo("2","Grupo Segundo Video", "5"));
-
-
-        //adpgVideoD = new GrupoDisponibleVideoAdapter(getContext(), ListaGrupovDisponible);
-        //recyclerVgVideosD.setAdapter(adpgVideoD);
 
         return view;
     }
@@ -91,8 +82,9 @@ public class DescubrirVideoFragment extends Fragment {
                                 String id = jsonObject.getString("IdGrupo");
                                 String nombreGrupo = jsonObject.getString("NombreGrupo");
                                 String totalVideos = jsonObject.getString("TotalVideos");
+                                String caratulaGrupo = jsonObject.getString("CaratulaGrupo"); // Nueva propiedad
 
-                                GrupoModelVideo grupo = new GrupoModelVideo(id, nombreGrupo, totalVideos);
+                                GrupoModelVideo grupo = new GrupoModelVideo(id, nombreGrupo, totalVideos, caratulaGrupo);
                                 ListaGrupovDisponible.add(grupo);
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -104,7 +96,7 @@ public class DescubrirVideoFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getContext(), "Error al obtener los grupos: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), ": " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
         );

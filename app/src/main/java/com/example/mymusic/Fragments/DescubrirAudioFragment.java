@@ -31,7 +31,7 @@ public class DescubrirAudioFragment extends Fragment {
 
     private RecyclerView recyclerVgAudiosD;
     private GrupoDisponibleAudioAdapter adpgAudioD;
-    private List<GrupoModel> ListaGrupoaDisponible;
+    private List<GrupoModel> listaGruposDisponibles;
     private RequestQueue requestQueue;
 
     public DescubrirAudioFragment() {
@@ -43,18 +43,17 @@ public class DescubrirAudioFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_descubrir_audio, container, false);
 
         // Find the RecyclerView and set it up
         recyclerVgAudiosD = view.findViewById(R.id.recyclerVgAudiosD);
         recyclerVgAudiosD.setLayoutManager(new LinearLayoutManager(getContext()));
-        ListaGrupoaDisponible = new ArrayList<>();
+        listaGruposDisponibles = new ArrayList<>();
 
         // Initialize the adapter
-        adpgAudioD = new GrupoDisponibleAudioAdapter(getContext(), ListaGrupoaDisponible);
+        adpgAudioD = new GrupoDisponibleAudioAdapter(getContext(), listaGruposDisponibles);
         recyclerVgAudiosD.setAdapter(adpgAudioD);
 
         // Initialize RequestQueue
@@ -62,13 +61,6 @@ public class DescubrirAudioFragment extends Fragment {
 
         // Fetch groups
         fetchAudioGroups();
-        //ListaGrupoaDisponible = new ArrayList<>();
-        //ListaGrupoaDisponible.add(new GrupoModel("1","Grupo Primero", "10"));
-        //ListaGrupoaDisponible.add(new GrupoModel("2","Grupo Segundo", "5"));
-
-
-        //adpgAudioD = new GrupoDisponibleAudioAdapter(getContext(), ListaGrupoaDisponible);
-        //recyclerVgAudiosD.setAdapter(adpgAudioD);
 
         return view;
     }
@@ -83,16 +75,17 @@ public class DescubrirAudioFragment extends Fragment {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        ListaGrupoaDisponible.clear();
+                        listaGruposDisponibles.clear();
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
                                 String id = jsonObject.getString("IdGrupo");
                                 String nombreGrupo = jsonObject.getString("NombreGrupo");
                                 String totalAudios = jsonObject.getString("TotalAudios");
+                                String caratulaGrupo = jsonObject.getString("CaratulaGrupo");
 
-                                GrupoModel grupo = new GrupoModel(id, nombreGrupo, totalAudios);
-                                ListaGrupoaDisponible.add(grupo);
+                                GrupoModel grupo = new GrupoModel(id, nombreGrupo, totalAudios, caratulaGrupo);
+                                listaGruposDisponibles.add(grupo);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

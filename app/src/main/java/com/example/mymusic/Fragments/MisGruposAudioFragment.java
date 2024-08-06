@@ -30,7 +30,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class MisGruposAudioFragment extends Fragment {
 
     private RecyclerView recyclerViewMiGrupoAudio;
@@ -50,7 +49,7 @@ public class MisGruposAudioFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mis_grupos_audio, container, false);
 
-        //RecyclerView
+        // RecyclerView
         recyclerViewMiGrupoAudio = view.findViewById(R.id.recyclerViewMiGrupoAudio);
         recyclerViewMiGrupoAudio.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -61,20 +60,12 @@ public class MisGruposAudioFragment extends Fragment {
         // Initialize RequestQueue
         requestQueue = Volley.newRequestQueue(getContext());
 
-        // Fetch user groups
         fetchUserGroups();
-        //ListaMiGrupoAudio.add(new MiGrupoAudioModel("1","Grupo Pridsamero", "10"));
-        //ListaMiGrupoAudio.add(new MiGrupoAudioModel("11","Grupo EE", "10"));
-        //ListaMiGrupoAudio.add(new MiGrupoAudioModel("21","Grupo Primero", "10"));
 
-        //adpMiGrupoAudio = new MiGrupoAudioAdapter(getContext(), ListaMiGrupoAudio);
-        //recyclerViewMiGrupoAudio.setAdapter(adpMiGrupoAudio);
         return view;
     }
 
     private void fetchUserGroups() {
-        //FirebaseUser user = fAuth.getCurrentUser();
-        //String uid = user.getUid();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String firebaseUid = user.getUid();
@@ -94,8 +85,9 @@ public class MisGruposAudioFragment extends Fragment {
                                     String id = jsonObject.getString("IdGrupo");
                                     String nombreGrupo = jsonObject.getString("NombreGrupo");
                                     String totalAudios = jsonObject.getString("TotalAudios");
+                                    String caratulaGrupo = jsonObject.getString("CaratulaGrupo"); // Nueva propiedad
 
-                                    MiGrupoAudioModel grupo = new MiGrupoAudioModel(id, nombreGrupo, totalAudios);
+                                    MiGrupoAudioModel grupo = new MiGrupoAudioModel(id, nombreGrupo, totalAudios, caratulaGrupo);
                                     ListaMiGrupoAudio.add(grupo);
                                 } catch (JSONException e) {
                                     e.printStackTrace();

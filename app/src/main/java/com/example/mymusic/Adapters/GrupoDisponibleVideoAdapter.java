@@ -3,6 +3,9 @@ package com.example.mymusic.Adapters;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,28 +17,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mymusic.Activities.Grupos.GrupoAudioActivity;
 import com.example.mymusic.Activities.Grupos.GrupoVideoActivity;
-import com.example.mymusic.Models.GrupoModel;
 import com.example.mymusic.Models.GrupoModelVideo;
 import com.example.mymusic.R;
 
 import java.util.List;
 
-public class GrupoDisponibleVideoAdapter extends RecyclerView.Adapter<GrupoDisponibleVideoAdapter.ViewHolder>{
+public class GrupoDisponibleVideoAdapter extends RecyclerView.Adapter<GrupoDisponibleVideoAdapter.ViewHolder> {
     private List<GrupoModelVideo> ListaGrupovDisponible;
     private Context context;
+
+    public GrupoDisponibleVideoAdapter(Context context, List<GrupoModelVideo> ListaGrupovDisponible) {
+        this.context = context;
+        this.ListaGrupovDisponible = ListaGrupovDisponible;
+    }
 
     @NonNull
     @Override
     public GrupoDisponibleVideoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grupo_disponible_video, parent, false);
         return new GrupoDisponibleVideoAdapter.ViewHolder(view);
-    }
-
-    public GrupoDisponibleVideoAdapter(Context context, List<GrupoModelVideo> ListaGrupovDisponible){
-        this.context = context;
-        this.ListaGrupovDisponible = ListaGrupovDisponible;
     }
 
     @Override
@@ -45,17 +46,26 @@ public class GrupoDisponibleVideoAdapter extends RecyclerView.Adapter<GrupoDispo
         holder.titulo_vdisponible.setText(grupoModelVideo.getNombreGrupo());
         holder.cantidad_videos_disp.setText(grupoModelVideo.getCantidadVideos());
 
+        // Decode and set the caratula image
+        String base64Image = grupoModelVideo.getCaratulaGrupo();
+        if (base64Image != null && !base64Image.isEmpty()) {
+            byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            holder.caratula_grupov_disp.setImageBitmap(decodedByte);
+        } else {
+            holder.caratula_grupov_disp.setImageResource(R.drawable.video_default_24); // Default image resource
+        }
+
         holder.bt_entrar_grupov.setOnClickListener(v -> {
             irAGrupo(grupoModelVideo.getIdGrupo(), grupoModelVideo.getNombreGrupo(), grupoModelVideo.getCantidadVideos());
         });
-
     }
 
     public void irAGrupo(String idGrupo, String nombreGrupo, String cantidadVideos) {
         ContentValues cv = new ContentValues();
         cv.put("idGrupo", idGrupo);
         cv.put("nombreGrupo", nombreGrupo);
-        cv.put("cantidadVideos",cantidadVideos);
+        cv.put("cantidadVideos", cantidadVideos);
 
         if (context != null) {
             Intent intent = new Intent(context, GrupoVideoActivity.class);
@@ -64,7 +74,7 @@ public class GrupoDisponibleVideoAdapter extends RecyclerView.Adapter<GrupoDispo
             }
             context.startActivity(intent);
         } else {
-            Log.e("GrupoVideoAdapter", "Contexto nulo");
+            Log.e("GrupoDisponibleVideoAdapter", "Contexto nulo");
         }
     }
 
@@ -74,7 +84,7 @@ public class GrupoDisponibleVideoAdapter extends RecyclerView.Adapter<GrupoDispo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView id_grupov_api, titulo_vdisponible, autor_gvideo,cantidad_videos_disp;
+        TextView id_grupov_api, titulo_vdisponible, autor_gvideo, cantidad_videos_disp;
         ImageView caratula_grupov_disp;
         ImageButton bt_entrar_grupov;
 

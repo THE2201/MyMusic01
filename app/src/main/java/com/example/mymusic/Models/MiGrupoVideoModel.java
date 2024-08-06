@@ -1,28 +1,27 @@
 package com.example.mymusic.Models;
 
 public class MiGrupoVideoModel {
-    private String idGrupo;
-    private String nombreGrupo;
-    private String cantidadVideos;
+    private String IdGrupo;
+    private String NombreGrupo;
+    private String CaratulaGrupo;
+    private String CantidadVideos;
 
-    public MiGrupoVideoModel(String idGrupo, String nombreGrupo, String cantidadVideos) {
-        this.idGrupo = idGrupo;
-        this.nombreGrupo = nombreGrupo;
-        this.cantidadVideos = cantidadVideos;
-    }
-    public MiGrupoVideoModel() {
-    }
-    public String getIdGrupo() {
-        return idGrupo;
+    public MiGrupoVideoModel(String idGrupo, String nombreGrupo, String caratulaGrupo, String cantidadVideos) {
+        this.IdGrupo = idGrupo;
+        this.NombreGrupo = nombreGrupo;
+        this.CaratulaGrupo = caratulaGrupo;
+        this.CantidadVideos = cantidadVideos;
     }
 
-    public String getNombreGrupo() {
-        return nombreGrupo;
-    }
+    public String getIdGrupo() { return IdGrupo; }
+    public void setIdGrupo(String idGrupo) { this.IdGrupo = idGrupo; }
 
-    public String getCantidadVideos() {
-        return cantidadVideos + " Videos";
-    }
+    public String getNombreGrupo() { return NombreGrupo; }
+    public void setNombreGrupo(String nombreGrupo) { this.NombreGrupo = nombreGrupo; }
 
+    public String getCaratulaGrupo() { return CaratulaGrupo; }
+    public void setCaratulaGrupo(String caratulaGrupo) { this.CaratulaGrupo = caratulaGrupo; }
 
+    public String getCantidadVideos() { return CantidadVideos; }
+    public void setCantidadVideos(String cantidadVideos) { this.CantidadVideos = cantidadVideos; }
 }

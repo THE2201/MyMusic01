@@ -3,6 +3,9 @@ package com.example.mymusic.Adapters;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +47,16 @@ public class MiGrupoAudioAdapter extends RecyclerView.Adapter<MiGrupoAudioAdapte
         holder.id_migrupoa_api.setText(miGrupoAudioModel.getIdGrupo());
         holder.titulo_migrupoa.setText(miGrupoAudioModel.getNombreGrupo());
         holder.cantidad_audios.setText(miGrupoAudioModel.getCantidadAudios());
+
+        // Decode and set the caratula image
+        String base64Image = miGrupoAudioModel.getCaratulaGrupo();
+        if (base64Image != null && !base64Image.isEmpty()) {
+            byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            holder.caratula_grupoa.setImageBitmap(decodedByte);
+        } else {
+            holder.caratula_grupoa.setImageResource(R.drawable.audio_default_24); // Default image resource
+        }
 
         holder.bt_salir_gaudio.setOnClickListener(v -> EliminarGrupo(miGrupoAudioModel.getIdGrupo(), position));
         holder.itemView.setOnClickListener(v -> irAGrupo(miGrupoAudioModel.getIdGrupo(), miGrupoAudioModel.getNombreGrupo(), miGrupoAudioModel.getCantidadAudios()));

@@ -24,10 +24,21 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.mymusic.Activities.Inicio.DashboardActivity;
 import com.example.mymusic.Activities.Solicitudes.CrearSolicitudActivity;
 import com.example.mymusic.Activities.Usuario.PerfilActivity;
 import com.example.mymusic.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -45,6 +56,7 @@ public class CrearGrupoActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_PICK = 2;
     private String currentPhotoPath;
+    private RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,38 +70,14 @@ public class CrearGrupoActivity extends AppCompatActivity {
         btn_crear_grupo = findViewById(R.id.btn_crear_grupo);
         btn_cancelar_crear_grupo = findViewById(R.id.btn_cancelar_crear_grupo);
 
+        requestQueue = Volley.newRequestQueue(this);
 
         btn_crear_grupo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String vNombreGrupo = NombreGrupo.getText().toString().trim();
-                String vTipo = spinner_crear_grupo.getSelectedItem().toString().trim();
-
-
-
-                if(base64String==null){
-                    Toast.makeText(CrearGrupoActivity.this, "No ha seleccionado foto", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if(TextUtils.isEmpty(vNombreGrupo)){
-                    NombreGrupo.setError("nombre requerido");
-                    Toast.makeText(CrearGrupoActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(vTipo.equals("Seleccionar")){
-                    Toast.makeText(CrearGrupoActivity.this, "Seleccione tipo de grupo", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-
-
-
-
+                crearGrupo();
             }
         });
-
-
 
         btn_seleccionar_caratula.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +86,6 @@ public class CrearGrupoActivity extends AppCompatActivity {
             }
         });
 
-
         btn_cancelar_crear_grupo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,23 +93,93 @@ public class CrearGrupoActivity extends AppCompatActivity {
             }
         });
 
-        //Selecciones de spinner
+        // Selecciones de spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.dropdown_items, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_crear_grupo.setAdapter(adapter);
         spinner_crear_grupo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItem = parent.getItemAtPosition(position).toString();
-
+                // No hacer nada por ahora
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Another interface callback
+                // No hacer nada por ahora
             }
         });
+    }
 
+    private void crearGrupo() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String vNombreGrupo = NombreGrupo.getText().toString().trim();
+        String vTipo = spinner_crear_grupo.getSelectedItem().toString().trim();
+
+        if (base64String == null) {
+            Toast.makeText(CrearGrupoActivity.this, "No ha seleccionado foto", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(vNombreGrupo)) {
+            NombreGrupo.setError("Nombre requerido");
+            Toast.makeText(CrearGrupoActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (vTipo.equals("Seleccionar")) {
+            Toast.makeText(CrearGrupoActivity.this, "Seleccione tipo de grupo", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String firebaseUid = user.getUid();
+
+        JSONObject postData = new JSONObject();
+        try {
+            postData.put("NombreGrupo", vNombreGrupo);
+            postData.put("FirebaseUid", firebaseUid);
+            postData.put("TipoGrupo", vTipo);
+            postData.put("CaratulaGrupo", base64String);
+            postData.put("EstadoGrupo", 1); // Estado activo al crear
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = "http://34.125.8.146/create_group.php";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                postData,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String message = response.getString("message");
+                            Toast.makeText(CrearGrupoActivity.this, message, Toast.LENGTH_SHORT).show();
+                            if (message.equals("Grupo creado exitosamente.")) {
+                                startActivity(new Intent(CrearGrupoActivity.this, DashboardActivity.class));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(CrearGrupoActivity.this, "Error al procesar la respuesta", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley", error.toString());
+                        Toast.makeText(CrearGrupoActivity.this, "Error al crear el grupo", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        requestQueue.add(jsonObjectRequest);
     }
 
     private void dispatchPickPictureIntent() {
