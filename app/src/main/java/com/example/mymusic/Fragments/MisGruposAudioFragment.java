@@ -1,6 +1,7 @@
 package com.example.mymusic.Fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +107,8 @@ public class MisGruposAudioFragment extends Fragment {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getContext(), "Error al obtener los grupos: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Crea un grupo de audios para visualizar", Toast.LENGTH_SHORT).show();
+                            Log.d("MensajePeticion", "Mensaje"+ error.getMessage());
                         }
                     }
             );

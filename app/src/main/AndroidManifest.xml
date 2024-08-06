@@ -63,11 +63,13 @@
             android:name=".Activities.Playback.PlayAudioActivity"
             android:exported="true"
             android:label="Audio Playback"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:parentActivityName=".Activities.Grupos.GrupoAudioActivity" />
         <activity
             android:name=".Activities.Playback.PlayVideoActivity"
             android:exported="true"
             android:label="Video Playback"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:parentActivityName=".Activities.Grupos.GrupoVideoActivity" />
         <activity
             android:name=".Activities.Usuario.EditarPerfilActivity"
