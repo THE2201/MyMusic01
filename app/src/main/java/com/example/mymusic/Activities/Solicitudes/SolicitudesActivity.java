@@ -5,27 +5,17 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
-import com.example.mymusic.Fragments.MisGruposAudioFragment;
-import com.example.mymusic.Fragments.MisGruposVideoFragment;
-import com.example.mymusic.databinding.ActivityMisGruposBinding;
 import com.example.mymusic.databinding.ActivitySolicitudesBinding;
-import androidx.activity.EdgeToEdge;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.mymusic.Activities.Inicio.DashboardActivity;
-import com.example.mymusic.Activities.Usuario.PerfilActivity;
-import com.example.mymusic.Fragments.Audio_fragme;
-import com.example.mymusic.Fragments.Video_fragme;
+import com.example.mymusic.Fragments.SolicitudesAudioFragment;
+import com.example.mymusic.Fragments.SolicitudesVideoFragment;
 import com.example.mymusic.R;
 
 public class SolicitudesActivity extends AppCompatActivity {
@@ -37,15 +27,15 @@ public class SolicitudesActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         binding = ActivitySolicitudesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        replaceFragment(new Audio_fragme());
+        replaceFragment(new SolicitudesAudioFragment());
 
         binding.bottomNavSolicitudes.setOnItemSelectedListener(item -> {
             if(item.getItemId()==R.id.audiobottom){
-                replaceFragment(new Audio_fragme());
+                replaceFragment(new SolicitudesAudioFragment());
             } else if (item.getItemId()==R.id.videobottom) {
-                replaceFragment(new Video_fragme());
+                replaceFragment(new SolicitudesVideoFragment());
             } else{
-                replaceFragment(new Audio_fragme());
+                replaceFragment(new SolicitudesAudioFragment());
             }
             return true;
         });
@@ -71,7 +61,6 @@ public class SolicitudesActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout_solicitudes, fragment);
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 }
