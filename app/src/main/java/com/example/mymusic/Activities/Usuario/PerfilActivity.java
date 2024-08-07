@@ -2,6 +2,7 @@ package com.example.mymusic.Activities.Usuario;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,30 +22,34 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.mymusic.Activities.Grabadora.GrabadoraActivity;
-import com.example.mymusic.Activities.Inicio.LoginActivity;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.mymusic.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class PerfilActivity extends AppCompatActivity {
     ImageView imageView;
-    EditText usuario,nombre, apellido;
+    EditText usuario, nombre, apellido;
     Button guardarCambios, btcambiarfoto, cancelar, passwd;
 
-    //seleccion de imagen galeria
     private static final int REQUEST_IMAGE_PICK = 2;
-    private String currentPhotoPath;
+    private RequestQueue requestQueue;
+    private Bitmap currentImageBitmap;
+    private FirebaseAuth fAuth;
+    private String firebaseUid;
 
-    String vNombre =" ",vApellido=" ",vUsuario=" ";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +66,16 @@ public class PerfilActivity extends AppCompatActivity {
         btcambiarfoto = findViewById(R.id.btcambiarfoto);
         cancelar = findViewById(R.id.cancelarperfil);
 
+        requestQueue = Volley.newRequestQueue(this);
+        fAuth = FirebaseAuth.getInstance();
+
+        // Obtener FirebaseUid del usuario actual
+        FirebaseUser user = fAuth.getCurrentUser();
+        if (user != null) {
+            firebaseUid = user.getUid();
+            fetchUserProfile(firebaseUid);
+        }
+
         passwd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,77 +83,65 @@ public class PerfilActivity extends AppCompatActivity {
             }
         });
 
-        btcambiarfoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dispatchPickPictureIntent();
+        guardarCambios.setOnClickListener(v -> {
+            String nUsuario = usuario.getText().toString().trim();
+            String nNombre = nombre.getText().toString().trim();
+            String nApellido = apellido.getText().toString().trim();
+            String nPassword = passwd.getText().toString().trim();
+            String foto = convertToBase64(currentImageBitmap);
+
+            if (TextUtils.isEmpty(nUsuario)) {
+                usuario.setError("Usuario requerido");
+                Toast.makeText(PerfilActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
+                return;
             }
+            if (TextUtils.isEmpty(nNombre)) {
+                nombre.setError("Nombre requerido");
+                Toast.makeText(PerfilActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(nApellido)) {
+                apellido.setError("Apellido requerido");
+                Toast.makeText(PerfilActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(nPassword)) {
+                passwd.setError("Contraseña vacía");
+                Toast.makeText(PerfilActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            updateUserProfile(firebaseUid, nUsuario, nNombre, nApellido, foto);
         });
 
-        cancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                usuario.setText(vUsuario);
-                apellido.setText(vApellido);
-                nombre.setText(vNombre);
-                imageView.setImageDrawable(ContextCompat.getDrawable(PerfilActivity.this, R.drawable.user_24));
+        btcambiarfoto.setOnClickListener(v -> dispatchPickPictureIntent());
 
-                usuario.setEnabled(false);
-                nombre.setEnabled(false);
-                apellido.setEnabled(false);
-                passwd.setVisibility(View.INVISIBLE);
-                passwd.setEnabled(false);
-                guardarCambios.setVisibility(View.INVISIBLE);
-                btcambiarfoto.setVisibility(View.INVISIBLE);
-                cancelar.setVisibility(View.INVISIBLE);
-            }
+        cancelar.setOnClickListener(v -> {
+            usuario.setText("");
+            apellido.setText("");
+            nombre.setText("");
+            imageView.setImageDrawable(ContextCompat.getDrawable(PerfilActivity.this, R.drawable.user_24));
+
+            usuario.setEnabled(false);
+            nombre.setEnabled(false);
+            apellido.setEnabled(false);
+            passwd.setVisibility(View.INVISIBLE);
+            passwd.setEnabled(false);
+            guardarCambios.setVisibility(View.INVISIBLE);
+            btcambiarfoto.setVisibility(View.INVISIBLE);
+            cancelar.setVisibility(View.INVISIBLE);
         });
-
-
-        guardarCambios.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String nUsuario = usuario.getText().toString().trim();
-                String nNombre = nombre.getText().toString().trim();
-                String nApellido = apellido.getText().toString().trim();
-                String nPassword = passwd.getText().toString().trim();
-                String foto;
-
-
-                if(TextUtils.isEmpty(nUsuario)){
-                    usuario.setError("Usuario requerido");
-                    Toast.makeText(PerfilActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(nNombre)){
-                    nombre.setError("Usuario requerido");
-                    Toast.makeText(PerfilActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(nApellido)){
-                    apellido.setError("apellido requerido");
-                    Toast.makeText(PerfilActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(nPassword)){
-                    passwd.setError("Contrasena vacia");
-                    Toast.makeText(PerfilActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-
-            }
-        });
-
     }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.opciones_perfil,menu);
+        getMenuInflater().inflate(R.menu.opciones_perfil, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==R.id.editar_perfil){
-
+        if (item.getItemId() == R.id.editar_perfil) {
             usuario.setEnabled(true);
             nombre.setEnabled(true);
             apellido.setEnabled(true);
@@ -148,19 +151,98 @@ public class PerfilActivity extends AppCompatActivity {
             btcambiarfoto.setVisibility(View.VISIBLE);
             cancelar.setVisibility(View.VISIBLE);
 
-            //tomar los datos actuales / existentes
-            vUsuario = usuario.getText().toString().trim();
-            vNombre = nombre.getText().toString().trim();
-            vApellido = apellido.getText().toString().trim();
-
-        }else if(item.getItemId()==R.id.eliminar_cuenta){
+            // Tomar los datos actuales / existentes
+            if (firebaseUid != null) {
+                fetchUserProfile(firebaseUid);
+            }
+        } else if (item.getItemId() == R.id.eliminar_cuenta) {
             startActivity(new Intent(PerfilActivity.this, EliminarCuentaActivity.class));
-        }else{
+        } else {
             return super.onOptionsItemSelected(item);
-
         }
         return true;
     }
+
+    private void fetchUserProfile(String firebaseUid) {
+        String url = "http://34.125.8.146/get_user_profile.php?uid=" + firebaseUid;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        if (response.has("success") && response.getBoolean("success")) {
+                            JSONObject data = response.getJSONObject("data");
+                            usuario.setText(data.getString("Usuario"));
+                            nombre.setText(data.getString("Nombre"));
+                            apellido.setText(data.getString("Apellido"));
+                            String base64Image = data.getString("FotoUsuario");
+                            if (!base64Image.isEmpty()) {
+                                byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+                                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                                imageView.setImageBitmap(decodedByte);
+                                currentImageBitmap = decodedByte;
+                            }
+                        } else {
+                            Toast.makeText(PerfilActivity.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(PerfilActivity.this, "Error al procesar la respuesta", Toast.LENGTH_LONG).show();
+                    }
+                },
+                error -> Toast.makeText(PerfilActivity.this, "Error de red", Toast.LENGTH_LONG).show()
+        );
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+
+    private void updateUserProfile(String firebaseUid, String usuario, String nombre, String apellido, String foto) {
+        String url = "http://34.125.8.146/update_user_profile.php";
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("firebaseUid", firebaseUid);
+            jsonBody.put("usuario", usuario);
+            jsonBody.put("nombre", nombre);
+            jsonBody.put("apellido", apellido);
+            jsonBody.put("foto", foto != null ? foto : ""); // Maneja el caso de null aquí
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                jsonBody,
+                response -> {
+                    try {
+                        if (response.has("message")) {
+                            Toast.makeText(PerfilActivity.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(PerfilActivity.this, "Error al procesar la respuesta", Toast.LENGTH_LONG).show();
+                    }
+                },
+                error -> Toast.makeText(PerfilActivity.this, "Error de red", Toast.LENGTH_LONG).show()
+        );
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private String convertToBase64(Bitmap bitmap) {
+        if (bitmap == null) {
+            return "";
+        }
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
 
     private void dispatchPickPictureIntent() {
         Intent pickPictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -175,31 +257,11 @@ public class PerfilActivity extends AppCompatActivity {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                 imageView.setImageBitmap(bitmap);
-                String base64String = convertToBase64(bitmap);
-                Log.d("BASE64", base64String);
+                currentImageBitmap = bitmap;
             } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private String convertToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
-    }
-
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(null);
-        File image = File.createTempFile(
-                imageFileName,
-                ".jpg",
-                storageDir
-        );
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
     }
 }
