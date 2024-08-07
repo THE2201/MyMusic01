@@ -1,5 +1,6 @@
 package com.example.mymusic.Activities.Solicitudes;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -19,8 +20,22 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.mymusic.Activities.Usuario.EditarPerfilActivity;
 import com.example.mymusic.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CrearSolicitudActivity extends AppCompatActivity {
 
@@ -49,31 +64,32 @@ public class CrearSolicitudActivity extends AppCompatActivity {
         crear_solicitud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String vTitulo = titulo.getText().toString().trim();
                 String vComentario = comentario.getText().toString().trim();
                 String vTipo = spinner.getSelectedItem().toString().trim();
 
-                if(TextUtils.isEmpty(vTitulo)){
+                if (TextUtils.isEmpty(vTitulo)) {
                     titulo.setError("Titulo requerido");
                     Toast.makeText(CrearSolicitudActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(TextUtils.isEmpty(vComentario)){
+                if (TextUtils.isEmpty(vComentario)) {
                     comentario.setError("Comentario requerido");
                     Toast.makeText(CrearSolicitudActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(TextUtils.isEmpty(vTipo)|| vTipo.equals("Seleccione")){
-
-
+                if (TextUtils.isEmpty(vTipo) || vTipo.equals("Seleccione")) {
                     Toast.makeText(CrearSolicitudActivity.this, "Seleccione tipo de solicitud", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                Toast.makeText(CrearSolicitudActivity.this, vTitulo+vComentario+vTipo, Toast.LENGTH_SHORT).show();
-                //guardarSolicitud(vTitulo, vComentario, vTipo, 125);
-
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    String firebaseUid = user.getUid();
+                    guardarSolicitud(vTitulo, vComentario, vTipo, firebaseUid);
+                } else {
+                    Toast.makeText(CrearSolicitudActivity.this, "Usuario no autenticado.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -95,7 +111,7 @@ public class CrearSolicitudActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
-                Toast.makeText(CrearSolicitudActivity.this, "Selected: " + selectedItem, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(CrearSolicitudActivity.this, "Selected: " + selectedItem, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -105,4 +121,57 @@ public class CrearSolicitudActivity extends AppCompatActivity {
 
 
     }
+
+    private void guardarSolicitud(String titulo, String comentario, String tipoSolicitud, String firebaseUid) {
+        String url = "http://34.125.8.146/crearSolicitud.php";
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Guardando solicitud...");
+        progressDialog.show();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        progressDialog.dismiss();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            boolean success = jsonObject.getBoolean("success");
+                            if (success) {
+                                Toast.makeText(CrearSolicitudActivity.this, "Solicitud creada exitosamente.", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(CrearSolicitudActivity.this, SolicitudesActivity.class));
+                            } else {
+                                String message = jsonObject.getString("message");
+                                Toast.makeText(CrearSolicitudActivity.this, message, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(CrearSolicitudActivity.this, "Error al procesar la respuesta.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressDialog.dismiss();
+                        Toast.makeText(CrearSolicitudActivity.this, "Error al realizar la solicitud.", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("titulo", titulo);
+                params.put("comentario", comentario);
+                params.put("firebaseUid", firebaseUid);
+                params.put("tipoSolicitud", tipoSolicitud);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    // ... (dentro del onClick de crear_solicitud)
+
+
 }

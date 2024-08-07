@@ -9,14 +9,24 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.example.mymusic.Adapters.SolicitudesAdapter;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.mymusic.Adapters.SolicitudesVideoAdapter;
 import com.example.mymusic.Models.SolicitudModel;
 import com.example.mymusic.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SolicitudesVideoFragment extends Fragment {
 
@@ -25,29 +35,69 @@ public class SolicitudesVideoFragment extends Fragment {
     private List<SolicitudModel> ListaSolicitudVideo;
     private RequestQueue requestQueue;
 
-
     public SolicitudesVideoFragment() {
-        //contructor vacio
-
+        // Constructor vacío
     }
+
     public static SolicitudesVideoFragment newInstance() {
         return new SolicitudesVideoFragment();
     }
 
-
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_solicitudes_video, container, false);
 
         recyclerViewSolicitudesVideo = view.findViewById(R.id.recyclerViewSolicitudesVideo);
         recyclerViewSolicitudesVideo.setLayoutManager(new LinearLayoutManager(getContext()));
         ListaSolicitudVideo = new ArrayList<>();
-        ListaSolicitudVideo.add(new SolicitudModel("Como la Video", "22/12/2024", "ChayanneUser", "Esta es la cancion mas divertida me gusta muxo"));
-        ListaSolicitudVideo.add(new SolicitudModel("Te amo Video", "22/12/2024", "usuarioBonito", "Mi abueloo silia cantar en el pueblo cuando se ponia bolo"));
 
         adpSolicitudVideo = new SolicitudesVideoAdapter(getContext(), ListaSolicitudVideo);
         recyclerViewSolicitudesVideo.setAdapter(adpSolicitudVideo);
+
+        requestQueue = Volley.newRequestQueue(getContext());
+        obtenerSolicitudes("Video");
+
         return view;
+    }
+
+    private void obtenerSolicitudes(String tipoSolicitud) {
+        String url = "http://34.125.8.146/obtenerSolicitudes.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                String titulo = jsonObject.getString("Titulo");
+                                String fechaSolicitado = jsonObject.getString("FechaSolicitado");
+                                String usuario = jsonObject.getString("Usuario");
+                                String comentario = jsonObject.getString("Comentario");
+
+                                SolicitudModel solicitud = new SolicitudModel(titulo, fechaSolicitado, usuario, comentario);
+                                ListaSolicitudVideo.add(solicitud);
+                            }
+                            adpSolicitudVideo.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("tipoSolicitud", tipoSolicitud);
+                return params;
+            }
+        };
+
+        requestQueue.add(stringRequest);
     }
 }
