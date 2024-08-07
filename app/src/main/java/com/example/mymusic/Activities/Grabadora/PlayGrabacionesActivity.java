@@ -15,8 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mymusic.R;
@@ -26,7 +24,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class PlayGrabacionesActivity extends AppCompatActivity {
@@ -80,6 +77,7 @@ public class PlayGrabacionesActivity extends AppCompatActivity {
                 mediaPlayer = null;
                 tvCurrentTime.setText("00:00");
                 seekBar.setProgress(0);
+                handler.removeCallbacks(updater);
             }
         });
 
@@ -125,6 +123,8 @@ public class PlayGrabacionesActivity extends AppCompatActivity {
 
                             String totalTime = createTimeLabel(mediaPlayer.getDuration());
                             tvTotalTime.setText(totalTime);
+
+                            seekBar.setMax(mediaPlayer.getDuration());
                         } else {
                             Toast.makeText(this, "Error al cargar la grabación.", Toast.LENGTH_SHORT).show();
                         }
@@ -157,7 +157,6 @@ public class PlayGrabacionesActivity extends AppCompatActivity {
             tvCurrentTime.setText(currentTime);
 
             if (mediaPlayer.isPlaying()) {
-                Runnable updater = this::updateSeekBar;
                 handler.postDelayed(updater, 1000);
             }
         }
@@ -181,4 +180,6 @@ public class PlayGrabacionesActivity extends AppCompatActivity {
         }
         handler.removeCallbacksAndMessages(null);
     }
+
+    private final Runnable updater = this::updateSeekBar;
 }
