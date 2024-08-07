@@ -43,10 +43,13 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.ViewHolder>{
 
@@ -110,15 +113,52 @@ public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.
         }
     }
 
-    private void eliminarGrabacion(String id, int position) {
-        Toast.makeText(context, "Eliminar: "+id, Toast.LENGTH_SHORT).show();
+    private void eliminarGrabacion(String idGrabacion, int position) {
 
+        String url = "http://34.125.8.146/eliminarGrabacion.php";
 
-        listaGrabs.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, listaGrabs.size());
+        // Crear la solicitud POST
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            boolean success = jsonResponse.getBoolean("success");
 
+                            if (success) {
+                                // Eliminar la grabación de la lista y actualizar la vista
+                                listaGrabs.remove(position);
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position, listaGrabs.size());
+                                Toast.makeText(context, "Grabación eliminada exitosamente.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Error al eliminar la grabación.", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(context, "Error en la respuesta del servidor.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Error en la solicitud de eliminación.", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("idGrabacion", idGrabacion);
+                return params;
+            }
+        };
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+        queue.add(stringRequest);
     }
+
 
 //    private void compartirGrabacion(String id,String titulo, int position) {
 //        Toast.makeText(context, "Compartir: "+id, Toast.LENGTH_SHORT).show();
@@ -208,7 +248,6 @@ public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.
 
 
     private void reproducirGrabacion(String id, String titulo, String fechaGrabacion) {
-//        Toast.makeText(context, "Play"+ id, Toast.LENGTH_SHORT).show();
         ContentValues cv = new ContentValues();
         cv.put("IdGrabacion", id);
         cv.put("tituloGrabacion", titulo);

@@ -22,9 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -47,7 +44,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 public class GrabadoraActivity extends AppCompatActivity {
     private Button btnStart, btnStop;
@@ -96,6 +92,7 @@ public class GrabadoraActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.opciones_grabadora,menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId()==R.id.mis_grabaciones){
@@ -145,14 +142,11 @@ public class GrabadoraActivity extends AppCompatActivity {
             e.printStackTrace();
             return null;
         }
-        String encodedString = Base64.encodeToString(audioBytes, Base64.DEFAULT);
-        Log.d("GrabacionB64Check:", encodedString);
-        return encodedString;
+        return Base64.encodeToString(audioBytes, Base64.DEFAULT);
     }
 
     public static String createName(){
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        //String id = UUID.randomUUID().toString();
         return "Recording_"+timeStamp+".3gp";
     }
 
@@ -161,15 +155,15 @@ public class GrabadoraActivity extends AppCompatActivity {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                int minutes = (seconds%3600)/60;
-                int secs = seconds%60;
-                String time = String.format(Locale.getDefault(),"%02d:%02d",minutes,secs);
+                int minutes = (seconds % 3600) / 60;
+                int secs = seconds % 60;
+                String time = String.format(Locale.getDefault(), "%02d:%02d", minutes, secs);
                 elapsed.setText(time);
-                if(isRecording){
+                if (isRecording) {
                     seconds++;
                     handler.removeCallbacksAndMessages(null);
                 }
-                handler.postDelayed(this,1000);
+                handler.postDelayed(this, 1000);
             }
         });
     }
@@ -178,20 +172,16 @@ public class GrabadoraActivity extends AppCompatActivity {
         mediaRecorder.stop();
         mediaRecorder.release();
         mediaRecorder = null;
-        Toast.makeText(this, "Guardado: "+ saveAs, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Guardado: " + saveAs, Toast.LENGTH_SHORT).show();
         imageView.setImageDrawable(ContextCompat.getDrawable(GrabadoraActivity.this, R.drawable.mic_off));
-        isRecording=false;
-        seconds=0;
+        isRecording = false;
+        seconds = 0;
         elapsed.setTextColor(Color.WHITE);
         elapsed.setText("00:00");
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
 
-        encodeAudioFileToBase64();
-
-
-        //Con esta funcion se guarda
-        //guardarGrabacion();
+        guardarGrabacion();
     }
 
     private void guardarGrabacion() {
@@ -200,16 +190,17 @@ public class GrabadoraActivity extends AppCompatActivity {
         try {
             jsonBody.put("Titulo", saveAs);
             jsonBody.put("GrabacionData", encodeAudioFileToBase64());
-            jsonBody.put("SubidoPorId", "");
+            jsonBody.put("SubidoPorId", getFirebaseUserId());
             jsonBody.put("EstadoGrabacion", "1");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
                 response -> {
                     Log.d("Response", response.toString());
-                    Toast.makeText(getApplicationContext(), "Guardado con exito!", Toast.LENGTH_SHORT).show();
-                },error -> Log.e("Error", error.toString())) {
+                    Toast.makeText(getApplicationContext(), "Guardado con éxito!", Toast.LENGTH_SHORT).show();
+                }, error -> Log.e("Error", error.toString())) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
@@ -217,12 +208,15 @@ public class GrabadoraActivity extends AppCompatActivity {
                 return headers;
             }
         };
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonObjectRequest);
     }
 
-
-
+    private String getFirebaseUserId() {
+        FirebaseAuth fAuth = FirebaseAuth.getInstance();
+        return fAuth.getCurrentUser() != null ? fAuth.getCurrentUser().getUid() : "";
+    }
 
     private boolean checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
