@@ -5,16 +5,17 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -28,15 +29,19 @@ import com.example.mymusic.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class PlayVideoActivity extends AppCompatActivity {
 
-    private static final String BASE_URL = "http://34.125.8.146/";
+    private static final String BASE_URL = "http://34.125.8.146/obtener_video.php";
     private VideoView videoViewPlay;
     private SeekBar seekBarVideoPlay;
     private TextView tactualPlay, tduracionPlay, tituloVideoPlay;
     private Button btnPlayPausa, btnRotar;
     private RelativeLayout controlPanel;
+    private ProgressBar progressBar;
     private Handler handler = new Handler();
     private boolean isPlaying = false;
     private RequestQueue requestQueue;
@@ -57,6 +62,20 @@ public class PlayVideoActivity extends AppCompatActivity {
         btnRotar = findViewById(R.id.btnRotar);
         controlPanel = findViewById(R.id.controlPanel);
 
+        progressBar = new ProgressBar(this);
+        progressBar.setLayoutParams(new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT));
+        progressBar.setIndeterminate(true);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        progressBar.setLayoutParams(params);
+
+        RelativeLayout rootLayout = findViewById(R.id.relatiVideo);
+        rootLayout.addView(progressBar);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -67,28 +86,23 @@ public class PlayVideoActivity extends AppCompatActivity {
                     cv.put(key, bundle.getString(key));
                 }
                 idVideo = cv.getAsString("idVideo");
-                String tituloVideo  = cv.getAsString("tituloVideo");
+                String tituloVideo = cv.getAsString("tituloVideo");
                 String autorVideo = cv.getAsString("autorVideo");
                 String duracionVideo = cv.getAsString("duracionVideo");
-                tituloVideoPlay.setText(tituloVideo+"\n"+autorVideo);
+                tituloVideoPlay.setText(tituloVideo + "\n" + autorVideo);
                 tduracionPlay.setText(duracionVideo);
             }
         }
 
-
-        // Initialize Volley request queue
         requestQueue = Volley.newRequestQueue(this);
 
-
-
-        // Aca se manda con el id del video
-        //declarado linea44 definido linea 70
-        fetchVideoUrl(idVideo);
+        fetchVideo(idVideo);
 
         videoViewPlay.setOnPreparedListener(mediaPlayer -> {
             seekBarVideoPlay.setMax(videoViewPlay.getDuration());
             tduracionPlay.setText(formatTime(videoViewPlay.getDuration()));
             btnPlayPausa.setEnabled(true);
+            progressBar.setVisibility(View.GONE);
         });
 
         videoViewPlay.setOnCompletionListener(mediaPlayer -> {
@@ -141,76 +155,92 @@ public class PlayVideoActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchVideoUrl(String videoId) {
-        //esta id la saca de ContentValue paquete que se manda de la actividad anterior /// Asi como ya esta lleno el Titulo, duracion, y autor
-        //Es un String, Solo llama el cuerpo del video
-        String url = BASE_URL + "?id=" + idVideo;
+    private void fetchVideo(String videoId) {
+        String url = BASE_URL + "?id=" + videoId;
+        progressBar.setVisibility(View.VISIBLE);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String videoUrl = response.getString("url");
-                            playVideo(videoUrl);
+                            String videoBase64 = response.getString("VideoData");
+                            String titulo = response.getString("Titulo");
+                            String duracion = response.getString("Duracion");
+
+                            // Convierte base64 a byte array
+                            byte[] videoData = android.util.Base64.decode(videoBase64, android.util.Base64.DEFAULT);
+
+                            // Guarda el video en un archivo temporal
+                            File videoFile = saveVideoToFile(videoData);
+                            if (videoFile != null) {
+                                Uri videoUri = Uri.fromFile(videoFile);
+
+                                videoViewPlay.setVideoURI(videoUri);
+                                tituloVideoPlay.setText(titulo);
+                                tduracionPlay.setText(duracion);
+                            } else {
+                                Toast.makeText(PlayVideoActivity.this, "Error al guardar video", Toast.LENGTH_SHORT).show();
+                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(PlayVideoActivity.this, "Falla al adquirir video", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PlayVideoActivity.this, "Error al obtener video", Toast.LENGTH_SHORT).show();
+                        } finally {
+                            // Oculta el ProgressBar
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(PlayVideoActivity.this, "No se pudo obtener la URL del video", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PlayVideoActivity.this, "Error al obtener video", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
             }
         });
 
         requestQueue.add(jsonObjectRequest);
     }
 
-    private void playVideo(String videoUrl) {
-        Uri videoUri = Uri.parse(videoUrl);
-        videoViewPlay.setVideoURI(videoUri);
-        videoViewPlay.requestFocus();
-        videoViewPlay.start();
-        btnPlayPausa.setText("Pausar");
-        isPlaying = true;
-        updateSeekBar();
+    private File saveVideoToFile(byte[] videoData) {
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_MOVIES), "temp_video.mp4");
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(videoData);
+            return file;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void updateSeekBar() {
-        if (isPlaying) {
-            seekBarVideoPlay.setProgress(videoViewPlay.getCurrentPosition());
-            tactualPlay.setText(formatTime(videoViewPlay.getCurrentPosition()));
-            handler.postDelayed(updateSeekBarRunnable, 1000);
-        }
+        handler.postDelayed(updateSeekBarRunnable, 1000);
     }
 
     private final Runnable updateSeekBarRunnable = new Runnable() {
         @Override
         public void run() {
-            updateSeekBar();
+            if (videoViewPlay.isPlaying()) {
+                seekBarVideoPlay.setProgress(videoViewPlay.getCurrentPosition());
+                tactualPlay.setText(formatTime(videoViewPlay.getCurrentPosition()));
+                handler.postDelayed(this, 1000);
+            }
         }
     };
+
+    private String formatTime(int milliseconds) {
+        int seconds = (milliseconds / 1000) % 60;
+        int minutes = (milliseconds / (1000 * 60)) % 60;
+        int hours = (milliseconds / (1000 * 60 * 60));
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
 
     private void toggleControls() {
         if (controlPanel.getVisibility() == View.VISIBLE) {
             controlPanel.setVisibility(View.GONE);
         } else {
             controlPanel.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private String formatTime(int milliseconds) {
-        int seconds = (milliseconds / 1000) % 60;
-        int minutes = (milliseconds / (1000 * 60)) % 60;
-        int hours = milliseconds / (1000 * 60 * 60);
-
-        if (hours > 0) {
-            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        } else {
-            return String.format("%02d:%02d", minutes, seconds);
         }
     }
 }

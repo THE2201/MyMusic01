@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_general"
+    android:id="@+id/relatiVideo"
     tools:context="Activities.Playback.PlayVideoActivity">
 
     <VideoView
@@ -71,7 +72,7 @@
             android:layout_marginBottom="30dp"
             android:backgroundTint="#2E7D32"
             app:cornerRadius="10dp"
-            android:text="Pausa" />
+            android:text="Play" />
 
         <Button
             android:id="@+id/btnRotar"

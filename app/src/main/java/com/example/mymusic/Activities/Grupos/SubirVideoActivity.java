@@ -1,27 +1,26 @@
 package com.example.mymusic.Activities.Grupos;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Toast;
 import android.widget.VideoView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -29,7 +28,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mymusic.Activities.Inicio.DashboardActivity;
 import com.example.mymusic.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,28 +47,61 @@ public class SubirVideoActivity extends AppCompatActivity {
     private Uri videoUri;
     private VideoView videoView;
     private SeekBar seekBar;
-    private EditText tvDuration;
-    private Button btn_subir_video,btnUpload;
+    private EditText tvDuration, etTitulo;
+    private Button btn_subir_video, btnUpload;
     private Handler handler = new Handler();
+    private String idGrupo;
+    private FirebaseAuth fAuth;
+    private String firebaseUid;
 
-    //private Button btnPlayVideo;
+    // ProgressDialog para mostrar mensaje de carga
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subir_video);
 
+        fAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = fAuth.getCurrentUser();
+        if (user != null) {
+            firebaseUid = user.getUid();
+        }
+
         btnUpload = findViewById(R.id.btnUpload);
-        //btnPlayVideo = findViewById(R.id.btnPlayVideo);
         videoView = findViewById(R.id.videoView);
         seekBar = findViewById(R.id.seekBar);
         tvDuration = findViewById(R.id.tvDuration);
+        etTitulo = findViewById(R.id.editTextText);
         btn_subir_video = findViewById(R.id.btn_subir_video);
+
+        // Inicializar ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Subiendo video, por favor espere...");
+        progressDialog.setCancelable(false);
+
+        // Obtener idGrupo del intent
+        Intent intent = getIntent();
+        if (intent != null) {
+            idGrupo = intent.getStringExtra("idGrupo");
+        }
 
         btn_subir_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadVideoToAPI(videoUri);
+                if (videoUri != null && !etTitulo.getText().toString().isEmpty()) {
+                    try {
+                        InputStream inputStream = getContentResolver().openInputStream(videoUri);
+                        byte[] videoBytes = getBytes(inputStream);
+                        String videoBase64 = Base64.encodeToString(videoBytes, Base64.DEFAULT);
+                        String titulo = etTitulo.getText().toString();
+                        uploadVideoToAPI(firebaseUid, titulo, idGrupo, videoBase64);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(SubirVideoActivity.this, "Selecciona un video y proporciona un título", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -110,9 +145,7 @@ public class SubirVideoActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
-
     }
-
 
     private void pickVideoFromGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
@@ -124,53 +157,64 @@ public class SubirVideoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_PICK_VIDEO && resultCode == RESULT_OK && data != null) {
             videoUri = data.getData();
+            videoView.setVideoURI(videoUri);
+            videoView.start();
         }
     }
 
-    private void uploadVideoToAPI(Uri videoUri) {
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(videoUri);
-            byte[] videoBytes = getBytes(inputStream);
-            String url = BASE_URL + "guardarVideo.php";
+    private void uploadVideoToAPI(String firebaseUid, String titulo, String idGrupo, String videoBase64) {
+        String url = BASE_URL + "subirVideo.php";
 
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            // Handle response
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            // Handle error
-                        }
-                    }) {
-                @Override
-                public byte[] getBody() throws AuthFailureError {
-                    return videoBytes;
-                }
+        // Mostrar ProgressDialog
+        progressDialog.show();
 
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("Content-Type", "video/mp4");
-                    return headers;
-                }
-            };
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Ocultar ProgressDialog y redirigir al DashboardActivity
+                        progressDialog.dismiss();
+                        Toast.makeText(SubirVideoActivity.this, "Video subido con éxito", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SubirVideoActivity.this, DashboardActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Ocultar ProgressDialog
+                        progressDialog.dismiss();
+                        // Manejar el error
+                        Toast.makeText(SubirVideoActivity.this, "Error al subir el video", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("FirebaseUid", firebaseUid);
+                params.put("Titulo", titulo);
+                params.put("idGrupo", idGrupo);
+                params.put("video", videoBase64);
+                return params;
+            }
 
-            Volley.newRequestQueue(this).add(stringRequest);
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+        };
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Volley.newRequestQueue(this).add(stringRequest);
     }
 
     public byte[] getBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
         byte[] buffer = new byte[bufferSize];
-        int len = 0;
+        int len;
         while ((len = inputStream.read(buffer)) != -1) {
             byteBuffer.write(buffer, 0, len);
         }
