@@ -167,43 +167,34 @@ public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.
 //
 //    }
 
-    public void compartirGrabacion(String idGrabacion , String titulo){
+    //Consultar la tabla "tb_grupos", necesitaremos el IdGrupo, NombreGrupo (esto debemos de ponerlo en el spinner). seleccionaremos los registros que sean TipoGrupo = "Audio" y EstadoGrupo="1"
+    public void compartirGrabacion(String idGrabacion, String titulo) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_spinner, null);
 
         EditText tituloCancionCompartir = dialogView.findViewById(R.id.titulo_cancion_compartir);
-        spinner = dialogView.findViewById(R.id.spinnerListaGrupos);
-        adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinnerItems);
+        Spinner spinner = dialogView.findViewById(R.id.spinnerListaGrupos);
+        List<Grupo> spinnerItems = new ArrayList<>();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
-        //Pendiente llenar lista de Grupos de UsuarioSQL
-        //Aca lo hago manualmente -- es la misma peticion de ListaDeMisGruposAudio
-
-        //Aca unicamente llena listado de audios de Usuario xq solo manda Grabaciones == Audio
-        for (int i=1; i<10; i++){
-            spinnerItems.add("Grupo"+ i);
-        }
         spinner.setAdapter(adapter);
-//        llenarListaGrupos(); ********************
 
+        // Llenar lista de grupos
+        llenarListaGrupos(spinnerItems, adapter);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Compartir a grupo")
                 .setView(dialogView)
-                .setMessage("Compartiendo "+ titulo)
+                .setMessage("Compartiendo " + titulo)
                 .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String tituloIngresado = tituloCancionCompartir.getText().toString();
-                        String selectedOption = spinner.getSelectedItem().toString();
-                        Toast.makeText(context, "Selected: " + selectedOption, Toast.LENGTH_SHORT).show();
+                        String selectedGrupo = spinner.getSelectedItem().toString();
+                        int idGrupo = obtenerIdGrupo(spinnerItems, selectedGrupo); // Obtener ID del grupo seleccionado
+                        String firebaseUid = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Obtener FirebaseUid del usuario actual
 
-
-
-                        ///Accion para subir agregar aca perrongui********************
-                        //************************************************************
-
+                        subirAudio(idGrabacion, tituloIngresado, idGrupo, firebaseUid);
                     }
                 })
                 .setNegativeButton("Cancelar", null)
@@ -211,12 +202,8 @@ public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.
                 .show();
     }
 
-    private void llenarListaGrupos() {
-
-        //Las debe pedir en base al idSQL
-        // SELECT IdGrupo, TituloGrupo FROM tb_grupos WHERE IdUsuarioCreadordeGrupo="elUsuario actual del dashboard"
-
-        String url = "http://34.125.8.146/gruposDeUsuario.php";
+    private void llenarListaGrupos(List<Grupo> spinnerItems, ArrayAdapter<String> adapter) {
+        String url = "http://34.125.8.146/gruposDeUsuario.php?firebaseUid=" + FirebaseAuth.getInstance().getCurrentUser().getUid();
         RequestQueue queue = Volley.newRequestQueue(context);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -225,9 +212,16 @@ public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.
                         try {
                             JSONArray jsonArray = new JSONArray(response);
                             spinnerItems.clear();
+                            List<String> nombresGrupos = new ArrayList<>();
                             for (int i = 0; i < jsonArray.length(); i++) {
-                                spinnerItems.add(jsonArray.getString(i));
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                int idGrupo = jsonObject.getInt("IdGrupo");
+                                String nombreGrupo = jsonObject.getString("NombreGrupo");
+                                spinnerItems.add(new Grupo(idGrupo, nombreGrupo));
+                                nombresGrupos.add(nombreGrupo);
                             }
+                            adapter.clear();
+                            adapter.addAll(nombresGrupos);
                             adapter.notifyDataSetChanged();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -243,6 +237,79 @@ public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.
 
         queue.add(stringRequest);
     }
+
+    private int obtenerIdGrupo(List<Grupo> grupos, String nombreGrupo) {
+        for (Grupo grupo : grupos) {
+            if (grupo.getNombre().equals(nombreGrupo)) {
+                return grupo.getId();
+            }
+        }
+        return 0; // Retorna 0 si no se encuentra el grupo
+    }
+
+    private void subirAudio(String idGrabacion, String titulo, int idGrupo, String firebaseUid) {
+        String url = "http://34.125.8.146/subirAudio.php";
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            boolean success = jsonResponse.getBoolean("success");
+                            if (success) {
+                                Toast.makeText(context, "Audio compartido exitosamente.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                String message = jsonResponse.getString("message");
+                                Toast.makeText(context, "Error: " + message, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(context, "Error en la respuesta del servidor.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Error en la solicitud de compartir.", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("idGrabacion", idGrabacion);
+                params.put("titulo", titulo);
+                params.put("idGrupo", String.valueOf(idGrupo));
+                params.put("firebaseUid", firebaseUid);
+                return params;
+            }
+        };
+
+        queue.add(stringRequest);
+    }
+
+
+    class Grupo {
+        private int id;
+        private String nombre;
+
+        public Grupo(int id, String nombre) {
+            this.id = id;
+            this.nombre = nombre;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getNombre() {
+            return nombre;
+        }
+    }
+
+
 
 
     private void reproducirGrabacion(String id, String titulo, String fechaGrabacion) {

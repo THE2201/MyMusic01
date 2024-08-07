@@ -35,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,10 +52,10 @@ public class GrabadoraActivity extends AppCompatActivity {
     private String audioFilePath;
     private ImageView imageView;
     private TextView elapsed;
-    private boolean isRecording=false;
+    private boolean isRecording = false;
     private String saveAs;
 
-    int seconds=0;
+    int seconds = 0;
     Handler handler;
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
@@ -71,33 +72,22 @@ public class GrabadoraActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         elapsed = findViewById(R.id.elapsed);
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startRecording();
-            }
-        });
-
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopRecording();
-            }
-        });
+        btnStart.setOnClickListener(v -> startRecording());
+        btnStop.setOnClickListener(v -> stopRecording());
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.opciones_grabadora,menu);
+        getMenuInflater().inflate(R.menu.opciones_grabadora, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==R.id.mis_grabaciones){
+        if (item.getItemId() == R.id.mis_grabaciones) {
             startActivity(new Intent(GrabadoraActivity.this, GrabacionesActivity.class));
-        } else{
+        } else {
             return super.onOptionsItemSelected(item);
         }
         return true;
@@ -110,8 +100,8 @@ public class GrabadoraActivity extends AppCompatActivity {
             audioFilePath = audioFile.getAbsolutePath();
             mediaRecorder = new MediaRecorder();
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4); // Cambiado a MPEG_4
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); // Cambiado a AAC
             mediaRecorder.setOutputFile(audioFilePath);
 
             try {
@@ -119,7 +109,7 @@ public class GrabadoraActivity extends AppCompatActivity {
                 mediaRecorder.start();
                 Toast.makeText(this, "Grabando...", Toast.LENGTH_SHORT).show();
                 imageView.setImageDrawable(ContextCompat.getDrawable(GrabadoraActivity.this, R.drawable.mic_on));
-                isRecording=true;
+                isRecording = true;
                 elapsedCounter();
                 elapsed.setTextColor(Color.RED);
                 btnStart.setEnabled(false);
@@ -132,25 +122,29 @@ public class GrabadoraActivity extends AppCompatActivity {
 
     private String encodeAudioFileToBase64() {
         File audioFile = new File(audioFilePath);
-        byte[] audioBytes = new byte[(int) audioFile.length()];
-        try (InputStream is = new FileInputStream(audioFile)) {
-            int bytesRead = is.read(audioBytes);
-            if (bytesRead != audioFile.length()) {
-                throw new IOException("Error al leer el archivo.");
+        try (InputStream is = new FileInputStream(audioFile);
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
             }
+            String base64String = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP);
+            Log.d("Base64Audio", base64String); // Imprime el Base64 en los logs
+            return base64String;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        return Base64.encodeToString(audioBytes, Base64.DEFAULT);
     }
 
-    public static String createName(){
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        return "Recording_"+timeStamp+".3gp";
+
+    public static String createName() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        return "Recording_" + timeStamp + ".mp4"; // Cambiado a mp4
     }
 
-    private void elapsedCounter(){
+    private void elapsedCounter() {
         handler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -186,31 +180,44 @@ public class GrabadoraActivity extends AppCompatActivity {
 
     private void guardarGrabacion() {
         String url = "http://34.125.8.146/guardarGrabacion.php";
-        JSONObject jsonBody = new JSONObject();
-        try {
-            jsonBody.put("Titulo", saveAs);
-            jsonBody.put("GrabacionData", encodeAudioFileToBase64());
-            jsonBody.put("SubidoPorId", getFirebaseUserId());
-            jsonBody.put("EstadoGrabacion", "1");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        RequestQueue queue = Volley.newRequestQueue(this);
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
-                response -> {
-                    Log.d("Response", response.toString());
-                    Toast.makeText(getApplicationContext(), "Guardado con éxito!", Toast.LENGTH_SHORT).show();
-                }, error -> Log.e("Error", error.toString())) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                return headers;
+        // Convertir el archivo a Base64
+        String encodedAudio = encodeAudioFileToBase64();
+
+        // Verificar que la conversión fue exitosa
+        if (encodedAudio != null) {
+            try {
+                JSONObject jsonBody = new JSONObject();
+                jsonBody.put("Titulo", saveAs);
+                jsonBody.put("GrabacionData", encodedAudio);
+                jsonBody.put("SubidoPorId", getFirebaseUserId());
+                jsonBody.put("EstadoGrabacion", "1");
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+                        response -> {
+                            Log.d("Response", response.toString());
+                            Toast.makeText(getApplicationContext(), "Guardado con éxito!", Toast.LENGTH_SHORT).show();
+                        }, error -> {
+                    Log.e("Error", error.toString());
+                    Toast.makeText(getApplicationContext(), "Error al guardar la grabación.", Toast.LENGTH_SHORT).show();
+                }) {
+                    @Override
+                    public Map<String, String> getHeaders() {
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("Content-Type", "application/json");
+                        return headers;
+                    }
+                };
+
+                queue.add(jsonObjectRequest);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error al crear JSON.", Toast.LENGTH_SHORT).show();
             }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonObjectRequest);
+        } else {
+            Toast.makeText(getApplicationContext(), "Error al codificar la grabación.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private String getFirebaseUserId() {
