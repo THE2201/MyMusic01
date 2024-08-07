@@ -1,5 +1,6 @@
 package com.example.mymusic.Activities.Grupos;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,12 +25,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.mymusic.Activities.Inicio.LoginActivity;
 import com.example.mymusic.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,13 +44,16 @@ public class SubirAudioActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private Handler handler = new Handler();
     private Runnable runnable;
-    private int duration=0;
+    private int duration = 0;
     String formatDuration;
-
+    private String idGrupo; // Variable para almacenar el idGrupo
+    private FirebaseAuth fAuth; // Agregar instancia de FirebaseAuth
 
     TextView subir_audio_engrupo;
     EditText duracionAudioSeleccionadoSubir, titulo_audio_subir;
     Button bt_playaudio_sel_subir;
+
+    private ProgressDialog progressDialog; // Agregar ProgressDialog
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,16 @@ public class SubirAudioActivity extends AppCompatActivity {
         Button buttonUpload = findViewById(R.id.buttonUpload);
         seekBar = findViewById(R.id.seekBar);
 
+        // Inicializar FirebaseAuth
+        fAuth = FirebaseAuth.getInstance();
+
+        // Obtener el idGrupo del Intent
+        idGrupo = getIntent().getStringExtra("idGrupo");
+
+        // Inicializar ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Subiendo audio...");
+        progressDialog.setCancelable(false);
 
         bt_playaudio_sel_subir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +91,6 @@ public class SubirAudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openAudioSelector();
-
             }
         });
 
@@ -84,6 +99,7 @@ public class SubirAudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (audioUri != null) {
                     try {
+                        progressDialog.show(); // Mostrar ProgressDialog antes de subir el archivo
                         uploadAudio(audioUri);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -98,12 +114,11 @@ public class SubirAudioActivity extends AppCompatActivity {
         bt_playaudio_sel_subir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(bt_playaudio_sel_subir.getText().equals("Detener")){
+                if (bt_playaudio_sel_subir.getText().equals("Detener")) {
                     stopAudio();
-                }else if(bt_playaudio_sel_subir.getText().equals("Reproducir")){
+                } else if (bt_playaudio_sel_subir.getText().equals("Reproducir")) {
                     playAudio(audioUri);
                 }
-
             }
         });
     }
@@ -111,7 +126,6 @@ public class SubirAudioActivity extends AppCompatActivity {
     private void openAudioSelector() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_AUDIO_REQUEST);
-
     }
 
     @Override
@@ -120,8 +134,6 @@ public class SubirAudioActivity extends AppCompatActivity {
         if (requestCode == PICK_AUDIO_REQUEST && resultCode == RESULT_OK && data != null) {
             audioUri = data.getData();
             playAudio(audioUri);
-
-
         }
     }
 
@@ -136,7 +148,6 @@ public class SubirAudioActivity extends AppCompatActivity {
         duracionAudioSeleccionadoSubir.setText(formatDuration);
         bt_playaudio_sel_subir.setEnabled(true);
         bt_playaudio_sel_subir.setText("Detener");
-
     }
 
     private void stopAudio() {
@@ -148,7 +159,6 @@ public class SubirAudioActivity extends AppCompatActivity {
             handler.removeCallbacks(runnable);
             bt_playaudio_sel_subir.setText("Reproducir");
         }
-
     }
 
     private void initializeSeekBar() {
@@ -174,17 +184,18 @@ public class SubirAudioActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 handler.removeCallbacks(runnable);
-
             }
         });
     }
@@ -197,32 +208,34 @@ public class SubirAudioActivity extends AppCompatActivity {
     }
 
     private void uploadAudio(Uri audioUri) throws IOException {
-            String vTituloAudio = titulo_audio_subir.getText().toString().trim();
-            String vDuracionAudio = duracionAudioSeleccionadoSubir.getText().toString().trim();
-            
-        if(TextUtils.isEmpty(vTituloAudio)){
+        String vTituloAudio = titulo_audio_subir.getText().toString().trim();
+        String vDuracionAudio = duracionAudioSeleccionadoSubir.getText().toString().trim();
+
+        if (TextUtils.isEmpty(vTituloAudio)) {
             titulo_audio_subir.setError("Titulo requerido");
             Toast.makeText(SubirAudioActivity.this, "Rellenar campo indicado", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(vDuracionAudio)){
+        if (TextUtils.isEmpty(vDuracionAudio)) {
             duracionAudioSeleccionadoSubir.setError("Seleccione un audio leer su duracion");
             Toast.makeText(SubirAudioActivity.this, "Elija un audio", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String url = BASE_URL+ "guardarAudio.php";
+        String url = BASE_URL + "guardarAudio.php";
         RequestQueue queue = Volley.newRequestQueue(this);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        progressDialog.dismiss(); // Ocultar ProgressDialog después de subir el archivo
                         Toast.makeText(SubirAudioActivity.this, "Subido Exitosamente", Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss(); // Ocultar ProgressDialog en caso de error
                 Toast.makeText(SubirAudioActivity.this, "Error audio", Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -230,25 +243,32 @@ public class SubirAudioActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 try {
-                    FileInputStream fis = new FileInputStream(new File(audioUri.getPath()));
-                    byte[] audioBytes = new byte[(int) fis.available()];
-                    fis.read(audioBytes);
-                    String encodedAudio = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT);
+                    InputStream inputStream = getContentResolver().openInputStream(audioUri);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        byteArrayOutputStream.write(buffer, 0, bytesRead);
+                    }
+                    String encodedAudio = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
 
-                    //aca te envio los datos
-                    params.put("Titulo", "");
+                    // Obtener FirebaseUid
+                    FirebaseUser user = fAuth.getCurrentUser();
+                    String uid = user != null ? user.getUid() : "";
+
+                    params.put("Titulo", vTituloAudio);
                     params.put("AudioData", encodedAudio);
-                    params.put("IdGrupo", "pendiente");
-                    params.put("SubidoPorId", "");
-                    //params.put("FechaSubido", "");  Mandala del API a la BD
-                    //params.put("EstadoAudio", "1");  Esta tambien de API      1=Activo,  0=Eliminado
-
+                    params.put("IdGrupo", idGrupo);
+                    params.put("SubidoPorId", uid);
+                    params.put("FechaSubido", ""); // Puedes obtener la fecha en el servidor
+                    params.put("EstadoSubido", "1");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 return params;
             }
         };
+
         queue.add(stringRequest);
     }
 }

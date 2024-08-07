@@ -31,4 +31,6 @@ public class AudioModel {
     public String getDuracionAudio() {
         return duracionAudio;
     }
+
+    // No se necesita el getter y setter para audioData
 }

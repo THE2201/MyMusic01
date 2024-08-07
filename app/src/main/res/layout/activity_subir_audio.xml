@@ -91,7 +91,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="50dp"
         android:fontFamily="sans-serif-condensed-light"
-        android:text="Mi Grupo tranqui"
+        android:text=""
         android:textAlignment="center"
         android:textSize="25sp"
         android:textStyle="bold" />

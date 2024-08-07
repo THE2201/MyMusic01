@@ -1,9 +1,7 @@
 package com.example.mymusic.Adapters;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,20 +12,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mymusic.Activities.Grabadora.PlayGrabacionesActivity;
 import com.example.mymusic.Activities.Playback.PlayAudioActivity;
 import com.example.mymusic.Models.AudioModel;
-import com.example.mymusic.Models.GrabacionesModel;
 import com.example.mymusic.R;
 
 import java.util.List;
 
-public class AudiosGrupoAdapter extends RecyclerView.Adapter<AudiosGrupoAdapter.ViewHolder>{
+public class AudiosGrupoAdapter extends RecyclerView.Adapter<AudiosGrupoAdapter.ViewHolder> {
     private List<AudioModel> listaDeAudios;
     private Context context;
 
-
-    public AudiosGrupoAdapter(Context context, List<AudioModel> listaDeAudios){
+    public AudiosGrupoAdapter(Context context, List<AudioModel> listaDeAudios) {
         this.context = context;
         this.listaDeAudios = listaDeAudios;
     }
@@ -44,15 +39,8 @@ public class AudiosGrupoAdapter extends RecyclerView.Adapter<AudiosGrupoAdapter.
         AudioModel audioModel = listaDeAudios.get(position);
         holder.id_audio_api.setText(audioModel.getIdAudio());
         holder.titulo_audio.setText(audioModel.getTituloAudio());
-        holder.autor_audio.setText(audioModel.getAutorAudio());
-        holder.duration_audio.setText(audioModel.getDuracionAudio());
 
-        holder.bt_play_audio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reproducirAudio(audioModel.getIdAudio(),audioModel.getTituloAudio(),audioModel.getAutorAudio(), audioModel.getDuracionAudio());
-            }
-        });
+        holder.bt_play_audio.setOnClickListener(v -> reproducirAudio(audioModel.getIdAudio(), audioModel.getTituloAudio()));
     }
 
     @Override
@@ -61,7 +49,7 @@ public class AudiosGrupoAdapter extends RecyclerView.Adapter<AudiosGrupoAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView id_audio_api, titulo_audio, autor_audio, duration_audio;
+        TextView id_audio_api, titulo_audio;
         ImageView caratula_audio;
         ImageButton bt_play_audio;
 
@@ -69,28 +57,17 @@ public class AudiosGrupoAdapter extends RecyclerView.Adapter<AudiosGrupoAdapter.
             super(itemView);
             id_audio_api = itemView.findViewById(R.id.id_audio_api);
             titulo_audio = itemView.findViewById(R.id.titulo_audio);
-            autor_audio = itemView.findViewById(R.id.autor_audio);
-            duration_audio = itemView.findViewById(R.id.duration_audio);
             caratula_audio = itemView.findViewById(R.id.caratula_audio);
             bt_play_audio = itemView.findViewById(R.id.bt_play_audio);
         }
     }
 
-    private void reproducirAudio(String id, String titulo, String autor, String duracion) {
-        ContentValues cv = new ContentValues();
-        cv.put("idAudio", id);
-        cv.put("tituloAudio", titulo);
-        cv.put("autorAudio", autor);
-        cv.put("duracionAudio", duracion);
-
+    private void reproducirAudio(String id, String titulo) {
+        Intent intent = new Intent(context, PlayAudioActivity.class);
+        intent.putExtra("idAudio", id);
+        intent.putExtra("tituloAudio", titulo);
         if (context != null) {
-            Intent intent = new Intent(context, PlayAudioActivity.class);
-            for (String key : cv.keySet()) {
-                intent.putExtra(key, cv.getAsString(key));
-            }
             context.startActivity(intent);
-        } else {
-            Log.e("AudioAdapterContext", "Contexto nulo");
         }
     }
 }
