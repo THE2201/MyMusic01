@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -170,42 +171,39 @@ public class GrabacionesAdapter extends RecyclerView.Adapter<GrabacionesAdapter.
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_spinner, null);
 
+        EditText tituloCancionCompartir = dialogView.findViewById(R.id.titulo_cancion_compartir);
         spinner = dialogView.findViewById(R.id.spinnerListaGrupos);
         adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinnerItems);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+
+        //Pendiente llenar lista de Grupos de UsuarioSQL
+        //Aca lo hago manualmente -- es la misma peticion de ListaDeMisGruposAudio
+
+        //Aca unicamente llena listado de audios de Usuario xq solo manda Grabaciones == Audio
         for (int i=1; i<10; i++){
             spinnerItems.add("Grupo"+ i);
         }
-
         spinner.setAdapter(adapter);
+//        llenarListaGrupos(); ********************
 
-//        llenarListaGrupos();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Compartir a grupo")
                 .setView(dialogView)
-                .setMessage("Compartiendo "+ titulo + " hacia")
+                .setMessage("Compartiendo "+ titulo)
                 .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        String tituloIngresado = tituloCancionCompartir.getText().toString();
                         String selectedOption = spinner.getSelectedItem().toString();
                         Toast.makeText(context, "Selected: " + selectedOption, Toast.LENGTH_SHORT).show();
 
-/////////////////////////
-                        ContentValues cv = new ContentValues();
-                        cv.put("IdGrabacion", idGrabacion);
-                        cv.put("tituloGrabacion", titulo);
 
-                        if (context != null) {
-                            Intent intent = new Intent(context, SubirAudioActivity.class);
-                            for (String key : cv.keySet()) {
-                                intent.putExtra(key, cv.getAsString(key));
-                            }
-                            context.startActivity(intent);
-                        } else {
-                            Log.e("GrabAdapterContext", "Contexto nulo");
-                        }
+
+                        ///Accion para subir agregar aca perrongui********************
+                        //************************************************************
+
                     }
                 })
                 .setNegativeButton("Cancelar", null)
